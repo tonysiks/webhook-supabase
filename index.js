@@ -10,6 +10,8 @@ const supabase = createClient(
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF3emJlZ3lia2pmeW9iaWx2cGdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU5NjM3MjcsImV4cCI6MjA5MTUzOTcyN30.NENJdd9sZiyoh7vR4j-msWJ8u0uLFxnz4s-6qYmUkuM'
 );
 
+const APIFY_TOKEN = process.env.APIFY_TOKEN;
+
 // ── Upsert par batch de 500 ───────────────────────────────────────────────────
 async function upsertProducts(products) {
   const BATCH = 500;
@@ -21,42 +23,57 @@ async function upsertProducts(products) {
   }
 }
 
-// ── Route générique : POST /webhook?supplier=vws ──────────────────────────────
+// ── Route webhook : appelée par Apify après chaque run ────────────────────────
 app.post('/webhook', async (req, res) => {
   const supplierKey = req.query.supplier;
 
-  // Vérifier que le fournisseur existe dans la config
   if (!supplierKey || !SUPPLIERS[supplierKey]) {
     return res.status(400).json({
-      error: `Fournisseur inconnu : "${supplierKey}". Fournisseurs disponibles : ${Object.keys(SUPPLIERS).join(', ')}`
+      error: `Fournisseur inconnu : "${supplierKey}". Disponibles : ${Object.keys(SUPPLIERS).join(', ')}`
     });
   }
 
   const supplier = SUPPLIERS[supplierKey];
-  const items = req.body;
 
-  if (!Array.isArray(items)) {
-    return res.status(400).json({ error: 'Le body doit être un tableau JSON' });
+  // Récupérer l'ID du run depuis le payload Apify
+  const runId = req.body?.resource?.id || req.body?.eventData?.actorRunId;
+  if (!runId) {
+    return res.status(400).json({ error: 'Impossible de trouver le runId dans le payload' });
   }
 
-  try {
-    const now = new Date().toISOString();
-    const products = items
-      .filter(p => p.title)
-      .map(p => ({
-        ...supplier.mapProduct(p),
-        fournisseur: supplier.name,
-        scraped_at: now,
-      }));
+  // Répondre immédiatement à Apify pour éviter le timeout
+  res.status(200).json({ ok: true, message: 'Import en cours...' });
 
-    await upsertProducts(products);
-    console.log(`[${supplier.name}] ${products.length} produits importés`);
-    res.status(200).json({ ok: true, supplier: supplier.name, count: products.length });
+  // Traitement en arrière-plan
+  (async () => {
+    try {
+      console.log(`[${supplier.name}] Récupération du dataset pour le run ${runId}...`);
 
-  } catch (e) {
-    console.error(`[${supplier.name}] Erreur:`, e.message);
-    res.status(500).json({ error: e.message });
-  }
+      const url = `https://api.apify.com/v2/actor-runs/${runId}/dataset/items?token=${APIFY_TOKEN}&format=json&limit=10000`;
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(`Apify API error: ${response.status}`);
+      const items = await response.json();
+
+      if (!Array.isArray(items) || items.length === 0) {
+        console.log(`[${supplier.name}] Aucun item dans le dataset`);
+        return;
+      }
+
+      const now = new Date().toISOString();
+      const products = items
+        .filter(p => p.title)
+        .map(p => ({
+          ...supplier.mapProduct(p),
+          fournisseur: supplier.name,
+          scraped_at: now,
+        }));
+
+      await upsertProducts(products);
+      console.log(`[${supplier.name}] ✅ ${products.length} produits importés`);
+    } catch (e) {
+      console.error(`[${supplier.name}] ❌ Erreur:`, e.message);
+    }
+  })();
 });
 
 // ── Health check ──────────────────────────────────────────────────────────────
