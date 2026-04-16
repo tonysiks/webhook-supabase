@@ -46,6 +46,19 @@ module.exports = {
     },
   },
 
+  syed: {
+    name: 'Syed Vintage',
+    taskId: 'mPv93rYqvbzipEwCT',
+    mapProduct: (p) => ({
+      title:      p.title || null,
+      url:        p.url || p.handle || null,
+      price:      parsePrice(p.price),
+      image_url:  p.images?.[0] || p.featuredImage || null,
+      category:   p.productType || p.type || p.category || null,
+      tags:       normalizeTags(p.tags),
+    }),
+  },
+
   // ── Template pour ajouter un nouveau fournisseur ──────────────────────────
   // new_supplier: {
   //   name: 'Nom du fournisseur',
