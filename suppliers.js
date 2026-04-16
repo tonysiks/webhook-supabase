@@ -1,12 +1,14 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // SUPPLIERS CONFIG
-// Pour ajouter un fournisseur : copier un bloc existant et adapter les champs.
+// Pour ajouter un fournisseur : copier un bloc et adapter.
+// taskId = ID de la task Apify (visible dans l'URL de la task)
 // ─────────────────────────────────────────────────────────────────────────────
 
 module.exports = {
 
   vws: {
     name: 'Vintage Wholesale Supply',
+    taskId: 'zYM43vAB2qnEpHKoM',
     mapProduct: (p) => ({
       title:      p.title || null,
       url:        p.url || p.handle || null,
@@ -19,6 +21,7 @@ module.exports = {
 
   wing999: {
     name: 'Wing999',
+    taskId: 'qzEAyYVmGFipzhxFz',
     categoryMap: {
       '100': 'Tops',
       '200': 'Bottoms',
@@ -44,14 +47,15 @@ module.exports = {
   },
 
   // ── Template pour ajouter un nouveau fournisseur ──────────────────────────
-  // example_supplier: {
-  //   name: 'Example Supplier',
+  // new_supplier: {
+  //   name: 'Nom du fournisseur',
+  //   taskId: 'APIFY_TASK_ID',   ← ID visible dans l'URL de la task Apify
   //   mapProduct: (p) => ({
-  //     title:      p.name || p.title || null,
-  //     url:        p.link || p.url || null,
+  //     title:      p.title || null,
+  //     url:        p.url || null,
   //     price:      parsePrice(p.price),
-  //     image_url:  p.photo || p.images?.[0] || null,
-  //     category:   p.type || null,
+  //     image_url:  p.images?.[0] || null,
+  //     category:   p.productType || null,
   //     tags:       normalizeTags(p.tags),
   //   }),
   // },
