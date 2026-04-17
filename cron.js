@@ -107,25 +107,31 @@ async function upsertProducts(products) {
 // ── Générer les tags manquants en base ───────────────────────────────────────
 async function fillMissingTags() {
   console.log('\n🏷️  Génération des tags manquants...');
+  
+  // Récupérer les produits sans tags via SQL direct
   const { data, error } = await supabase
     .from('produits')
     .select('id, title')
-    .or('tags.is.null,tags.eq.');
+    .is('tags', null)
+    .limit(2000);
 
-  if (error) { console.error('Erreur récupération produits sans tags:', error.message); return; }
-  if (!data || data.length === 0) { console.log('  Tous les produits ont des tags ✅'); return; }
+  const { data: data2, error: error2 } = await supabase
+    .from('produits')
+    .select('id, title')
+    .eq('tags', '')
+    .limit(2000);
 
-  console.log(`  ${data.length} produits sans tags à traiter`);
-  const BATCH = 500;
-  for (let i = 0; i < data.length; i += BATCH) {
-    const batch = data.slice(i, i + BATCH);
-    for (const p of batch) {
-      const tags = generateTags(p.title);
-      await supabase.from('produits').update({ tags }).eq('id', p.id);
-    }
-    console.log(`  ${Math.min(i + BATCH, data.length)}/${data.length} tags générés`);
+  if (error) { console.error('Erreur:', error.message); return; }
+
+  const all = [...(data || []), ...(data2 || [])];
+  if (all.length === 0) { console.log('  Tous les produits ont des tags ✅'); return; }
+
+  console.log(`  ${all.length} produits sans tags à traiter`);
+  for (const p of all) {
+    const tags = generateTags(p.title);
+    await supabase.from('produits').update({ tags }).eq('id', p.id);
   }
-  console.log('  ✅ Tags manquants générés');
+  console.log(`  ✅ ${all.length} tags générés`);
 }
 
 // ── Lancer une task Apify et attendre le résultat ────────────────────────────
