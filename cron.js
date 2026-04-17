@@ -183,6 +183,7 @@ async function main() {
       console.log(`  ${items.length} items récupérés`);
 
       const now = new Date().toISOString();
+      const seen = new Set();
       const products = items
         .filter(p => p.title)
         .map(p => ({
@@ -190,7 +191,12 @@ async function main() {
           fournisseur: supplier.name,
           scraped_at: now,
           tags: generateTags(p.title),
-        }));
+        }))
+        .filter(p => {
+          if (!p.url || seen.has(p.url)) return false;
+          seen.add(p.url);
+          return true;
+        });
 
       await upsertProducts(products);
       console.log(`  ✅ ${products.length} produits importés avec tags`);
