@@ -95,11 +95,18 @@ function generateTags(title) {
 
 // ── Upsert par batch de 500 ───────────────────────────────────────────────────
 async function upsertProducts(products) {
+  // Deduplicate by URL — duplicate URLs in one batch cause ON CONFLICT DO UPDATE to fail
+  const seen = new Map();
+  for (const p of products) {
+    if (p.url) seen.set(p.url, p);
+  }
+  const deduped = [...seen.values()];
+
   const BATCH = 500;
-  for (let i = 0; i < products.length; i += BATCH) {
+  for (let i = 0; i < deduped.length; i += BATCH) {
     const { error } = await supabase
       .from('produits')
-      .upsert(products.slice(i, i + BATCH), { onConflict: 'url' });
+      .upsert(deduped.slice(i, i + BATCH), { onConflict: 'url' });
     if (error) throw error;
   }
 }
@@ -107,31 +114,25 @@ async function upsertProducts(products) {
 // ── Générer les tags manquants en base ───────────────────────────────────────
 async function fillMissingTags() {
   console.log('\n🏷️  Génération des tags manquants...');
-  
-  // Récupérer les produits sans tags via SQL direct
   const { data, error } = await supabase
     .from('produits')
     .select('id, title')
-    .is('tags', null)
-    .limit(2000);
+    .or('tags.is.null,tags.eq.');
 
-  const { data: data2, error: error2 } = await supabase
-    .from('produits')
-    .select('id, title')
-    .eq('tags', '')
-    .limit(2000);
+  if (error) { console.error('Erreur récupération produits sans tags:', error.message); return; }
+  if (!data || data.length === 0) { console.log('  Tous les produits ont des tags ✅'); return; }
 
-  if (error) { console.error('Erreur:', error.message); return; }
-
-  const all = [...(data || []), ...(data2 || [])];
-  if (all.length === 0) { console.log('  Tous les produits ont des tags ✅'); return; }
-
-  console.log(`  ${all.length} produits sans tags à traiter`);
-  for (const p of all) {
-    const tags = generateTags(p.title);
-    await supabase.from('produits').update({ tags }).eq('id', p.id);
+  console.log(`  ${data.length} produits sans tags à traiter`);
+  const BATCH = 500;
+  for (let i = 0; i < data.length; i += BATCH) {
+    const batch = data.slice(i, i + BATCH);
+    for (const p of batch) {
+      const tags = generateTags(p.title);
+      await supabase.from('produits').update({ tags }).eq('id', p.id);
+    }
+    console.log(`  ${Math.min(i + BATCH, data.length)}/${data.length} tags générés`);
   }
-  console.log(`  ✅ ${all.length} tags générés`);
+  console.log('  ✅ Tags manquants générés');
 }
 
 // ── Lancer une task Apify et attendre le résultat ────────────────────────────
@@ -183,20 +184,14 @@ async function main() {
       console.log(`  ${items.length} items récupérés`);
 
       const now = new Date().toISOString();
-      const seen = new Set();
       const products = items
-        .filter(p => p.title)
+        .filter(p => p.title && (p.url || p.handle))
         .map(p => ({
           ...supplier.mapProduct(p),
           fournisseur: supplier.name,
           scraped_at: now,
           tags: generateTags(p.title),
-        }))
-        .filter(p => {
-          if (!p.url || seen.has(p.url)) return false;
-          seen.add(p.url);
-          return true;
-        });
+        }));
 
       await upsertProducts(products);
       console.log(`  ✅ ${products.length} produits importés avec tags`);
