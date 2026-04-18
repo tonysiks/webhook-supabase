@@ -11,10 +11,10 @@ module.exports = {
     taskId: 'zYM43vAB2qnEpHKoM',
     mapProduct: (p) => ({
       title:      p.title || null,
-      url:        p.url || p.handle || null,
-      price:      parsePrice(p.price),
-      image_url:  parseImageUrl(p.images, p.featuredImage),
-      category:   p.productType || p.type || p.category || null,
+      url:        p.source?.canonicalUrl || null,
+      price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
+      image_url:  p.medias?.[0]?.url || null,
+      category:   p.categories?.[0] || null,
       tags:       normalizeTags(p.tags),
     }),
   },
@@ -34,12 +34,12 @@ module.exports = {
       '900': 'Knitwear',
     },
     mapProduct: function(p) {
-      const rawCat = p.productType || p.type || p.category || null;
+      const rawCat = p.categories?.[0] || null;
       return {
         title:      p.title || null,
-        url:        p.url || p.handle || null,
-        price:      parsePrice(p.price),
-        image_url:  parseImageUrl(p.images, p.featuredImage),
+        url:        p.source?.canonicalUrl || null,
+        price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
+        image_url:  p.medias?.[0]?.url || null,
         category:   this.categoryMap[rawCat] || rawCat || null,
         tags:       normalizeTags(p.tags),
       };
@@ -51,10 +51,10 @@ module.exports = {
     taskId: 'mPv93rYqvbzipEwCT',
     mapProduct: (p) => ({
       title:      p.title || null,
-      url:        p.url || p.handle || null,
-      price:      parsePrice(p.price),
-      image_url:  parseImageUrl(p.images, p.featuredImage),
-      category:   p.productType || p.type || p.category || null,
+      url:        p.source?.canonicalUrl || null,
+      price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
+      image_url:  p.medias?.[0]?.url || null,
+      category:   p.categories?.[0] || null,
       tags:       normalizeTags(p.tags),
     }),
   },
@@ -65,10 +65,10 @@ module.exports = {
   //   taskId: 'APIFY_TASK_ID',   ← ID visible dans l'URL de la task Apify
   //   mapProduct: (p) => ({
   //     title:      p.title || null,
-  //     url:        p.url || null,
-  //     price:      parsePrice(p.price),
-  //     image_url:  p.images?.[0] || null,
-  //     category:   p.productType || null,
+  //     url:        p.source?.canonicalUrl || null,
+  //     price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
+  //     image_url:  p.medias?.[0]?.url || null,
+  //     category:   p.categories?.[0] || null,
   //     tags:       normalizeTags(p.tags),
   //   }),
   // },
@@ -87,12 +87,4 @@ function normalizeTags(tags) {
   if (!tags) return null;
   if (Array.isArray(tags)) return tags.join(', ');
   return String(tags);
-}
-
-// Apify can return images as strings or as objects with a src/url property
-function parseImageUrl(images, featuredImage) {
-  const first = images?.[0];
-  if (first) return typeof first === 'string' ? first : (first.src || first.url || null);
-  if (!featuredImage) return null;
-  return typeof featuredImage === 'string' ? featuredImage : (featuredImage.src || featuredImage.url || null);
 }

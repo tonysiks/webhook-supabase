@@ -182,7 +182,6 @@ async function main() {
       const runId = await runTask(supplier.taskId);
       const items = await fetchItems(runId);
       console.log(`  ${items.length} items récupérés`);
-      if (items.length > 0) console.log(`  [DEBUG] Premier item brut:`, JSON.stringify(items[0], null, 2));
 
       const now = new Date().toISOString();
       const products = items
