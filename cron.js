@@ -230,17 +230,32 @@ async function main() {
   console.log('\n✅ Pipeline terminé.');
 }
 
-function runGenerateTags() {
+function pipInstall(pip) {
   return new Promise((resolve, reject) => {
-    console.log('\n🏷️  Régénération des tags (generate_tags.py)...');
-    const script = path.join(__dirname, 'generate_tags.py');
+    const req = path.join(__dirname, 'requirements.txt');
+    const proc = spawn(pip, ['install', '-r', req], { stdio: 'inherit' });
+    proc.on('close', code => code === 0 ? resolve() : reject(new Error(`pip install exited with code ${code}`)));
+    proc.on('error', reject);
+  });
+}
+
+async function runGenerateTags() {
+  console.log('\n📦 Installation des dépendances Python...');
+  try {
+    await pipInstall('pip');
+  } catch {
+    await pipInstall('pip3');
+  }
+
+  console.log('\n🏷️  Régénération des tags (generate_tags.py)...');
+  const script = path.join(__dirname, 'generate_tags.py');
+  return new Promise((resolve, reject) => {
     const proc = spawn('python', [script], { stdio: 'inherit' });
     proc.on('close', code => {
       if (code === 0) resolve();
       else reject(new Error(`generate_tags.py exited with code ${code}`));
     });
-    proc.on('error', err => {
-      // Fallback python3 si python n'est pas disponible
+    proc.on('error', () => {
       const proc3 = spawn('python3', [script], { stdio: 'inherit' });
       proc3.on('close', code => code === 0 ? resolve() : reject(new Error(`generate_tags.py exited with code ${code}`)));
       proc3.on('error', reject);
