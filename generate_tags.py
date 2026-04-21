@@ -194,6 +194,27 @@ def generate_tags(title):
 
     return " ".join(sorted(set(tags)))
 
+CATEGORY_KEYWORDS = [
+    (["jacket", "veste", "bomber", "blazer", "anorak", "windbreaker"], "Veste"),
+    (["t-shirt", "tshirt", "t shirt", "tee"], "T-Shirt"),
+    (["sweatshirt", "hoodie", "hoody", "hooded", "crewneck"], "Sweatshirt"),
+    (["knitwear", "pull", "sweater", "jumper", "pullover", "knit"], "Pull"),
+    (["shirt", "chemise", "flannel"], "Chemise"),
+    (["trouser", "pant", "jean", "denim", "chino", "cargo"], "Pantalon"),
+    (["short"], "Short"),
+    (["coat", "manteau", "parka"], "Manteau"),
+    (["dress", "robe"], "Robe"),
+]
+
+def infer_category(title):
+    if not title:
+        return "Accessoire"
+    t = title.lower()
+    for keywords, category in CATEGORY_KEYWORDS:
+        if any(kw in t for kw in keywords):
+            return category
+    return "Accessoire"
+
 # Récupérer tous les produits (régénération complète des tags)
 FETCH_BATCH = 1000
 print("Récupération de tous les produits...")
@@ -204,7 +225,7 @@ offset = 0
 while True:
     resp = requests.get(
         f"{SUPABASE_URL}/rest/v1/produits"
-        f"?select=id,title&limit={FETCH_BATCH}&offset={offset}",
+        f"?select=id,title,category&limit={FETCH_BATCH}&offset={offset}",
         headers={**headers, "Prefer": "count=none"}
     )
     resp.raise_for_status()
@@ -226,7 +247,12 @@ errors = 0
 
 rows = []
 for p in all_products:
-    rows.append({"id": p['id'], "tags": generate_tags(p['title'])})
+    category = p.get('category') or None
+    rows.append({
+        "id": p['id'],
+        "tags": generate_tags(p['title']),
+        "category": category if category else infer_category(p['title']),
+    })
 
 print(f"   Tags générés, mise à jour en cours...")
 
@@ -234,7 +260,7 @@ for p in rows:
     resp = requests.patch(
         f"{SUPABASE_URL}/rest/v1/produits?id=eq.{p['id']}",
         headers=headers,
-        json={"tags": p['tags']}
+        json={"tags": p['tags'], "category": p['category']}
     )
     if resp.status_code == 204:
         total += 1
