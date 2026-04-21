@@ -1,4 +1,9 @@
+import sys
+print("Python version:", sys.version, flush=True)
+print("Starting imports...", flush=True)
+
 import requests
+print("imported requests", flush=True)
 
 SUPABASE_URL = "https://awzbegybkjfyobilvpgc.supabase.co"
 SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF3emJlZ3lia2pmeW9iaWx2cGdjIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NTk2MzcyNywiZXhwIjoyMDkxNTM5NzI3fQ.5KuxLYIcZIk9y7wChd2cLxV8lx5zBxUH_x6C5sfQ1SA"
