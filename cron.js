@@ -1,4 +1,6 @@
 const { createClient } = require('@supabase/supabase-js');
+const { spawn } = require('child_process');
+const path = require('path');
 const SUPPLIERS = require('./suppliers');
 
 const supabase = createClient(
@@ -204,7 +206,28 @@ async function main() {
   // Générer les tags manquants pour les anciens produits
   await fillMissingTags();
 
+  // Régénérer tous les tags via le script Python (logique multilingue complète)
+  await runGenerateTags();
+
   console.log('\n✅ Pipeline terminé.');
+}
+
+function runGenerateTags() {
+  return new Promise((resolve, reject) => {
+    console.log('\n🏷️  Régénération des tags (generate_tags.py)...');
+    const script = path.join(__dirname, 'generate_tags.py');
+    const proc = spawn('python', [script], { stdio: 'inherit' });
+    proc.on('close', code => {
+      if (code === 0) resolve();
+      else reject(new Error(`generate_tags.py exited with code ${code}`));
+    });
+    proc.on('error', err => {
+      // Fallback python3 si python n'est pas disponible
+      const proc3 = spawn('python3', [script], { stdio: 'inherit' });
+      proc3.on('close', code => code === 0 ? resolve() : reject(new Error(`generate_tags.py exited with code ${code}`)));
+      proc3.on('error', reject);
+    });
+  });
 }
 
 main();
