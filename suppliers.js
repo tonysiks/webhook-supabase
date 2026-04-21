@@ -113,7 +113,7 @@ module.exports = {
 
   laprovidence: {
     name: 'La Providence Wholesale',
-    taskId: '3rVSaYgEQI5RM1JPU',
+    taskId: 'tonysiks~la-providence-wholesale',
     mapProduct: (p) => ({
       title:      p.title || null,
       url:        p.source?.canonicalUrl || null,
