@@ -72,6 +72,19 @@ module.exports = {
     }),
   },
 
+  tvw: {
+    name: 'TVW Vintage Wholesale',
+    taskId: 'X4pZsw1Qlxg783WI1',
+    mapProduct: (p, usdToEur = 0.92) => ({
+      title:      p.title || null,
+      url:        p.source?.canonicalUrl || null,
+      price:      p.variants?.[0]?.price?.current != null ? Math.round(p.variants[0].price.current / 100 * usdToEur * 100) / 100 : null,
+      image_url:  p.medias?.[0]?.url || null,
+      category:   p.categories?.[0] || null,
+      tags:       normalizeTags(p.tags),
+    }),
+  },
+
   vs1989: {
     name: 'Vintage Suppliers 1989',
     taskId: 'bzXhLalqv5UTFyJSB',

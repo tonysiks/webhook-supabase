@@ -170,9 +170,27 @@ async function fetchItems(runId) {
 
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
+// ── Taux de change USD → EUR ──────────────────────────────────────────────────
+async function fetchUSDtoEUR() {
+  try {
+    const res = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    const rate = data.rates?.EUR;
+    if (!rate) throw new Error('Taux EUR introuvable');
+    console.log(`  💱 Taux USD/EUR : ${rate}`);
+    return rate;
+  } catch (e) {
+    console.warn(`  ⚠️  fetchUSDtoEUR échoué (${e.message}), fallback 0.92`);
+    return 0.92;
+  }
+}
+
 // ── Pipeline principal ────────────────────────────────────────────────────────
 async function main() {
   console.log(`\n🚀 Pipeline démarré — ${new Date().toISOString()}\n`);
+
+  const usdToEur = await fetchUSDtoEUR();
 
   for (const [key, supplier] of Object.entries(SUPPLIERS)) {
     if (!supplier.taskId) {
@@ -189,7 +207,7 @@ async function main() {
       const products = items
         .filter(p => p.title)
         .map(p => ({
-          ...supplier.mapProduct(p),
+          ...supplier.mapProduct(p, usdToEur),
           fournisseur: supplier.name,
           scraped_at: now,
           tags: generateTags(p.title),
