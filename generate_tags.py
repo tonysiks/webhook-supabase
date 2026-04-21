@@ -18,9 +18,8 @@ def generate_tags(title):
     if any(x in t for x in ["T-SHIRT", "TSHIRT", "T SHIRT", "TEE"]):
         tags += ["tshirt", "t-shirt", "tee",
                  "camiseta", "remera",       # ES
-                 "maglietta", "t-shirt",     # IT
-                 "t-shirt", "shirt",         # DE
-                 "camisola", "t-shirt"]      # PT
+                 "maglietta",               # IT
+                 "camisola"]               # PT
 
     # === SWEATS / HOODIES ===
     if any(x in t for x in ["SWEATSHIRT", "SWEAT-SHIRT", "CREWNECK"]):
@@ -55,11 +54,10 @@ def generate_tags(title):
     # === CHEMISES ===
     if any(x in t for x in ["SHIRT", "CHEMISE", "FLANNEL", "WESTERN"]):
         if not any(x in t for x in ["SWEATSHIRT", "T-SHIRT", "TSHIRT"]):
-            tags += ["chemise", "shirt",
+            tags += ["chemise",
                      "camisa",               # ES
                      "camicia",              # IT
-                     "hemd",                 # DE
-                     "camisa"]               # PT
+                     "hemd"]                 # DE
 
     # === VESTES ===
     if any(x in t for x in ["JACKET", "BOMBER", "ANORAK", "WINDBREAKER", "BLAZER"]):
