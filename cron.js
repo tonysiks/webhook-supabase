@@ -249,18 +249,28 @@ async function runGenerateTags() {
 
   console.log('\n🏷️  Régénération des tags (generate_tags.py)...');
   const script = path.join(__dirname, 'generate_tags.py');
-  return new Promise((resolve, reject) => {
-    const proc = spawn('python', [script], { stdio: 'inherit' });
-    proc.on('close', code => {
-      if (code === 0) resolve();
-      else reject(new Error(`generate_tags.py exited with code ${code}`));
+
+  function spawnPython(bin) {
+    return new Promise((resolve, reject) => {
+      const proc = spawn(bin, [script], { stdio: ['inherit', 'inherit', 'pipe'] });
+      let stderr = '';
+      proc.stderr.on('data', chunk => { stderr += chunk; process.stderr.write(chunk); });
+      proc.on('close', code => {
+        console.log(`  [generate_tags.py] exit code: ${code}`);
+        if (stderr) console.error(`  [generate_tags.py] stderr:\n${stderr}`);
+        if (code === 0) resolve();
+        else reject(new Error(`generate_tags.py exited with code ${code}`));
+      });
+      proc.on('error', reject);
     });
-    proc.on('error', () => {
-      const proc3 = spawn('python3', [script], { stdio: 'inherit' });
-      proc3.on('close', code => code === 0 ? resolve() : reject(new Error(`generate_tags.py exited with code ${code}`)));
-      proc3.on('error', reject);
-    });
-  });
+  }
+
+  try {
+    await spawnPython('python');
+  } catch (e) {
+    if (e.code === 'ENOENT') await spawnPython('python3');
+    else throw e;
+  }
 }
 
 main();
