@@ -233,7 +233,7 @@ async function main() {
 function pipInstall(pip) {
   return new Promise((resolve, reject) => {
     const req = path.join(__dirname, 'requirements.txt');
-    const proc = spawn(pip, ['install', '-r', req], { stdio: 'inherit' });
+    const proc = spawn(pip, ['install', '-r', req, '--break-system-packages'], { stdio: 'inherit' });
     proc.on('close', code => code === 0 ? resolve() : reject(new Error(`pip install exited with code ${code}`)));
     proc.on('error', reject);
   });
