@@ -194,9 +194,9 @@ def generate_tags(title):
 
     return " ".join(sorted(set(tags)))
 
-# Récupérer uniquement les produits où tags IS NULL, par batch de 1000
+# Récupérer tous les produits (régénération complète des tags)
 FETCH_BATCH = 1000
-print("Récupération des produits sans tags...")
+print("Récupération de tous les produits...")
 
 all_products = []
 offset = 0
@@ -204,7 +204,7 @@ offset = 0
 while True:
     resp = requests.get(
         f"{SUPABASE_URL}/rest/v1/produits"
-        f"?select=id,title&tags=is.null&limit={FETCH_BATCH}&offset={offset}",
+        f"?select=id,title&limit={FETCH_BATCH}&offset={offset}",
         headers={**headers, "Prefer": "count=none"}
     )
     resp.raise_for_status()
@@ -217,7 +217,7 @@ while True:
         break
     offset += FETCH_BATCH
 
-print(f"   Total: {len(all_products)} produits sans tags")
+print(f"   Total: {len(all_products)} produits")
 
 # Générer et mettre à jour les tags
 BATCH_SIZE = 50
