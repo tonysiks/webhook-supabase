@@ -111,6 +111,19 @@ module.exports = {
     }),
   },
 
+  boxwholesale: {
+    name: 'Box Wholesale France',
+    taskId: 'tonysiks~box-wholesale-france',
+    mapProduct: (p) => ({
+      title:      p.title || null,
+      url:        p.source?.canonicalUrl || null,
+      price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
+      image_url:  p.medias?.[0]?.url || null,
+      category:   p.categories?.[0] || null,
+      tags:       normalizeTags(p.tags),
+    }),
+  },
+
   laprovidence: {
     name: 'La Providence Wholesale',
     taskId: 'tonysiks~la-providence-wholesale',
