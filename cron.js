@@ -1,6 +1,7 @@
 const { createClient } = require('@supabase/supabase-js');
 const { spawn } = require('child_process');
 const path = require('path');
+const fs = require('fs');
 const SUPPLIERS = require('./suppliers');
 
 const supabase = createClient(
@@ -187,47 +188,59 @@ async function fetchUSDtoEUR() {
 }
 
 // ── Pipeline principal ────────────────────────────────────────────────────────
+const LOCK_FILE = '/tmp/cron.lock';
+
 async function main() {
-  console.log(`\n🚀 Pipeline démarré — ${new Date().toISOString()}\n`);
-
-  const usdToEur = await fetchUSDtoEUR();
-
-  for (const [key, supplier] of Object.entries(SUPPLIERS)) {
-    if (!supplier.taskId) {
-      console.log(`⚠️  [${supplier.name}] Pas de taskId, skip.`);
-      continue;
-    }
-    console.log(`\n📦 [${supplier.name}]`);
-    try {
-      const runId = await runTask(supplier.taskId);
-      const items = await fetchItems(runId);
-      console.log(`  ${items.length} items récupérés`);
-
-      const now = new Date().toISOString();
-      const products = items
-        .filter(p => p.title)
-        .map(p => ({
-          ...supplier.mapProduct(p, usdToEur),
-          fournisseur: supplier.name,
-          scraped_at: now,
-          tags: generateTags(p.title),
-        }))
-        .filter(p => p.url);
-
-      await upsertProducts(products);
-      console.log(`  ✅ ${products.length} produits importés avec tags`);
-    } catch (e) {
-      console.error(`  ❌ Erreur: ${e.message}`);
-    }
+  if (fs.existsSync(LOCK_FILE)) {
+    console.log('Pipeline déjà en cours, abandon.');
+    process.exit(0);
   }
+  fs.writeFileSync(LOCK_FILE, String(process.pid));
 
-  // Générer les tags manquants pour les anciens produits
-  await fillMissingTags();
+  try {
+    console.log(`\n🚀 Pipeline démarré — ${new Date().toISOString()}\n`);
 
-  // Régénérer tous les tags via le script Python (logique multilingue complète)
-  await runGenerateTags();
+    const usdToEur = await fetchUSDtoEUR();
 
-  console.log('\n✅ Pipeline terminé.');
+    for (const [key, supplier] of Object.entries(SUPPLIERS)) {
+      if (!supplier.taskId) {
+        console.log(`⚠️  [${supplier.name}] Pas de taskId, skip.`);
+        continue;
+      }
+      console.log(`\n📦 [${supplier.name}]`);
+      try {
+        const runId = await runTask(supplier.taskId);
+        const items = await fetchItems(runId);
+        console.log(`  ${items.length} items récupérés`);
+
+        const now = new Date().toISOString();
+        const products = items
+          .filter(p => p.title)
+          .map(p => ({
+            ...supplier.mapProduct(p, usdToEur),
+            fournisseur: supplier.name,
+            scraped_at: now,
+            tags: generateTags(p.title),
+          }))
+          .filter(p => p.url);
+
+        await upsertProducts(products);
+        console.log(`  ✅ ${products.length} produits importés avec tags`);
+      } catch (e) {
+        console.error(`  ❌ Erreur: ${e.message}`);
+      }
+    }
+
+    // Générer les tags manquants pour les anciens produits
+    await fillMissingTags();
+
+    // Régénérer tous les tags via le script Python (logique multilingue complète)
+    await runGenerateTags();
+
+    console.log('\n✅ Pipeline terminé.');
+  } finally {
+    if (fs.existsSync(LOCK_FILE)) fs.unlinkSync(LOCK_FILE);
+  }
 }
 
 function pipInstall(pip) {
@@ -248,7 +261,6 @@ async function runGenerateTags() {
   }
 
   console.log('\n🏷️  Régénération des tags (generate_tags.py)...');
-  const fs = require('fs');
   const script = path.join(__dirname, 'generate_tags.py');
   console.log(`  [generate_tags.py] chemin: ${script}`);
   console.log(`  [generate_tags.py] existe: ${fs.existsSync(script)}`);
