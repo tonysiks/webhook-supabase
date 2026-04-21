@@ -74,7 +74,7 @@ module.exports = {
 
   tvw: {
     name: 'TVW Vintage Wholesale',
-    taskId: 'X4pZsw1Qlxg783Wl1',
+    taskId: 'tonysiks~terranova-vintage-wholesale',
     mapProduct: (p, usdToEur = 0.92) => ({
       title:      p.title || null,
       url:        p.source?.canonicalUrl || null,
