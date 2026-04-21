@@ -248,16 +248,20 @@ async function runGenerateTags() {
   }
 
   console.log('\n🏷️  Régénération des tags (generate_tags.py)...');
+  const fs = require('fs');
   const script = path.join(__dirname, 'generate_tags.py');
+  console.log(`  [generate_tags.py] chemin: ${script}`);
+  console.log(`  [generate_tags.py] existe: ${fs.existsSync(script)}`);
 
   function spawnPython(bin) {
     return new Promise((resolve, reject) => {
       const proc = spawn(bin, [script], { stdio: ['inherit', 'inherit', 'pipe'] });
-      let stderr = '';
-      proc.stderr.on('data', chunk => { stderr += chunk; process.stderr.write(chunk); });
+      proc.stderr.on('data', chunk => {
+        process.stderr.write(chunk);
+        console.error(chunk.toString());
+      });
       proc.on('close', code => {
         console.log(`  [generate_tags.py] exit code: ${code}`);
-        if (stderr) console.error(`  [generate_tags.py] stderr:\n${stderr}`);
         if (code === 0) resolve();
         else reject(new Error(`generate_tags.py exited with code ${code}`));
       });
