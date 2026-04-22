@@ -257,15 +257,32 @@ def generate_tags(title):
     return " ".join(sorted(set(tags)))
 
 CATEGORY_KEYWORDS = [
-    (["jacket", "veste", "bomber", "blazer", "anorak", "windbreaker"], "Veste"),
-    (["t-shirt", "tshirt", "t shirt", "tee"], "T-Shirt"),
-    (["sweatshirt", "hoodie", "hoody", "hooded", "crewneck"], "Sweatshirt"),
-    (["knitwear", "pull", "sweater", "jumper", "pullover", "knit"], "Pull"),
-    (["shirt", "chemise", "flannel"], "Chemise"),
-    (["trouser", "pant", "jean", "denim", "chino", "cargo"], "Pantalon"),
+    # T-shirts — avant "shirt" pour éviter les faux positifs
+    (["t-shirt", "tshirt", "t shirt", "tee shirt", " tee"], "T-Shirt"),
+    # Sweats / hoodies — avant "pull" et "sweater"
+    (["sweatshirt", "sweat shirt", "hoodie", "hoody", "hooded sweat", "crewneck"], "Sweatshirt"),
+    # Vestes — avant "coat" et "blazer" génériques
+    (["jacket", "veste", "bomber", "blazer", "anorak", "windbreaker", "gilet", "waistcoat", "bodywarmer"], "Veste"),
+    # Manteaux
+    (["coat", "manteau", "parka", "overcoat", "trench"], "Manteau"),
+    # Pulls / tricots
+    (["knitwear", "knit", "pullover", "sweater", "jumper", "sweter", "pull "], "Pull"),
+    # Chemises
+    (["shirt", "chemise", "flannel", "blouse", "overshirt"], "Chemise"),
+    # Pantalons — jean/shorts séparés après
+    (["trouser", "pant", "jean", "denim", "chino", "cargo pant", "jogger", "legging"], "Pantalon"),
+    # Shorts
     (["short"], "Short"),
-    (["coat", "manteau", "parka"], "Manteau"),
+    # Robes
     (["dress", "robe"], "Robe"),
+    # Jupes
+    (["skirt", "jupe"], "Jupe"),
+    # Chaussures
+    (["shoe", "boot", "sneaker", "trainer", "footwear", "chaussure", "basket"], "Chaussures"),
+    # Mix / lots
+    (["bundle", "mix", "lot ", "kilo", "bale", "sack", "bag of", "pack of", "assort"], "Mix"),
+    # Accessoires (casquettes, chapeaux…) — en dernier
+    (["cap", "hat", "beanie", "bonnet", "casquette", "chapeau", "scarf", "echarpe", "glove", "gant"], "Accessoire"),
 ]
 
 def infer_category(title):
