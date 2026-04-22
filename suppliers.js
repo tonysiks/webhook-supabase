@@ -111,6 +111,20 @@ module.exports = {
     }),
   },
 
+  tagz: {
+    name: 'TAGZ',
+    taskId: 'VcGcp2dhCTW0w2VUN',
+    mapProduct: (p) => ({
+      title:      p.title || null,
+      url:        p.source?.canonicalUrl || null,
+      price:      p.variants?.[0]?.price?.current ?? null,
+      image_url:  p.medias?.[0]?.url || null,
+      category:   p.categories?.[0] || null,
+      fournisseur: 'TAGZ',
+      tags:       normalizeTags(p.tags),
+    }),
+  },
+
   boxwholesale: {
     name: 'Box Wholesale France',
     taskId: 'tonysiks~box-wholesale-france',
