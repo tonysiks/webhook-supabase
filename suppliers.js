@@ -150,6 +150,20 @@ module.exports = {
     }),
   },
 
+  vintagewholesaleeurope: {
+    name: 'Vintage Wholesale Europe',
+    taskId: 've45qjTMf2dNvg9Lg',
+    currency: 'EUR',
+    mapProduct: (p) => ({
+      title:      p.title || null,
+      url:        p.source?.canonicalUrl || null,
+      price:      p.variants?.[0]?.price != null ? parseFloat(p.variants[0].price) || null : null,
+      image_url:  p.medias?.[0]?.url || null,
+      category:   p.categories?.[0] || null,
+      tags:       normalizeTags(p.tags),
+    }),
+  },
+
   laprovidence: {
     name: 'La Providence Wholesale',
     taskId: 'tonysiks~la-providence-wholesale',
