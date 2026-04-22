@@ -171,19 +171,19 @@ async function fetchItems(runId) {
 
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
-// ── Taux de change USD → EUR ──────────────────────────────────────────────────
-async function fetchUSDtoEUR() {
+// ── Taux de change X → EUR ────────────────────────────────────────────────────
+async function fetchRate(base, fallback) {
   try {
-    const res = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+    const res = await fetch(`https://api.exchangerate-api.com/v4/latest/${base}`);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
     const rate = data.rates?.EUR;
     if (!rate) throw new Error('Taux EUR introuvable');
-    console.log(`  💱 Taux USD/EUR : ${rate}`);
+    console.log(`  💱 Taux ${base}/EUR : ${rate}`);
     return rate;
   } catch (e) {
-    console.warn(`  ⚠️  fetchUSDtoEUR échoué (${e.message}), fallback 0.92`);
-    return 0.92;
+    console.warn(`  ⚠️  fetchRate(${base}) échoué (${e.message}), fallback ${fallback}`);
+    return fallback;
   }
 }
 
@@ -200,28 +200,37 @@ async function main() {
   try {
     console.log(`\n🚀 Pipeline démarré — ${new Date().toISOString()}\n`);
 
-    const usdToEur = await fetchUSDtoEUR();
+    const [usdToEur, gbpToEur] = await Promise.all([
+      fetchRate('USD', 0.92),
+      fetchRate('GBP', 1.17),
+    ]);
+    const rates = { USD: usdToEur, GBP: gbpToEur, EUR: 1 };
 
     for (const [key, supplier] of Object.entries(SUPPLIERS)) {
       if (!supplier.taskId) {
         console.log(`⚠️  [${supplier.name}] Pas de taskId, skip.`);
         continue;
       }
-      console.log(`\n📦 [${supplier.name}]`);
+      console.log(`\n📦 [${supplier.name}] (${supplier.currency || 'EUR'})`);
       try {
         const runId = await runTask(supplier.taskId);
         const items = await fetchItems(runId);
         console.log(`  ${items.length} items récupérés`);
 
+        const rate = rates[supplier.currency] ?? 1;
         const now = new Date().toISOString();
         const products = items
           .filter(p => p.title)
-          .map(p => ({
-            ...supplier.mapProduct(p, usdToEur),
-            fournisseur: supplier.name,
-            scraped_at: now,
-            tags: generateTags(p.title),
-          }))
+          .map(p => {
+            const mapped = supplier.mapProduct(p);
+            return {
+              ...mapped,
+              price: mapped.price != null ? Math.round(mapped.price * rate * 100) / 100 : null,
+              fournisseur: supplier.name,
+              scraped_at: now,
+              tags: generateTags(p.title),
+            };
+          })
           .filter(p => p.url);
 
         await upsertProducts(products);

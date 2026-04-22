@@ -9,6 +9,7 @@ module.exports = {
   vws: {
     name: 'Vintage Wholesale Supply',
     taskId: 'zYM43vAB2qnEpHKoM',
+    currency: 'GBP',
     mapProduct: (p) => ({
       title:      p.title || null,
       url:        p.source?.canonicalUrl || null,
@@ -22,6 +23,7 @@ module.exports = {
   wing999: {
     name: 'Wing999',
     taskId: 'qzEAyYVmGFipzhxFz',
+    currency: 'EUR',
     categoryMap: {
       '100': 'Tops',
       '200': 'Bottoms',
@@ -49,6 +51,7 @@ module.exports = {
   syed: {
     name: 'Syed Vintage',
     taskId: 'mPv93rYqvbzipEwCT',
+    currency: 'GBP',
     mapProduct: (p) => ({
       title:      p.title || null,
       url:        p.source?.canonicalUrl || null,
@@ -62,6 +65,7 @@ module.exports = {
   ivw: {
     name: 'Italian Vintage Wholesale',
     taskId: 'b7DfqVgdCHLDz3beJ',
+    currency: 'EUR',
     mapProduct: (p) => ({
       title:      p.title || null,
       url:        p.source?.canonicalUrl || null,
@@ -75,10 +79,11 @@ module.exports = {
   tvw: {
     name: 'TVW Vintage Wholesale',
     taskId: 'tonysiks~terranova-vintage-wholesale',
-    mapProduct: (p, usdToEur = 0.92) => ({
+    currency: 'USD',
+    mapProduct: (p) => ({
       title:      p.title || null,
       url:        p.source?.canonicalUrl || null,
-      price:      p.variants?.[0]?.price?.current != null ? Math.round(p.variants[0].price.current / 100 * usdToEur * 100) / 100 : null,
+      price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
       category:   p.categories?.[0] || null,
       tags:       normalizeTags(p.tags),
@@ -88,6 +93,7 @@ module.exports = {
   vs1989: {
     name: 'Vintage Suppliers 1989',
     taskId: 'bzXhLalqv5UTFyJSB',
+    currency: 'EUR',
     mapProduct: (p) => ({
       title:      p.title || null,
       url:        p.source?.canonicalUrl || null,
@@ -101,6 +107,7 @@ module.exports = {
   unitedvintage: {
     name: 'United Vintage',
     taskId: 'LxceDObj8RyvS5I0b',
+    currency: 'EUR',
     mapProduct: (p) => ({
       title:      p.title || null,
       url:        p.source?.canonicalUrl || null,
@@ -114,6 +121,7 @@ module.exports = {
   tagz: {
     name: 'TAGZ',
     taskId: 'VcGcp2dhCTW0w2VUN',
+    currency: 'GBP',
     mapProduct: (p) => ({
       title:      p.title || null,
       url:        p.source?.canonicalUrl || null,
@@ -128,6 +136,7 @@ module.exports = {
   boxwholesale: {
     name: 'Box Wholesale France',
     taskId: 'tonysiks~box-wholesale-france',
+    currency: 'EUR',
     mapProduct: (p) => ({
       title:      p.title || null,
       url:        p.source?.canonicalUrl || null,
@@ -141,6 +150,7 @@ module.exports = {
   laprovidence: {
     name: 'La Providence Wholesale',
     taskId: 'tonysiks~la-providence-wholesale',
+    currency: 'EUR',
     mapProduct: (p) => ({
       title:      p.title || null,
       url:        p.source?.canonicalUrl || null,
