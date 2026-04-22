@@ -42,7 +42,7 @@ module.exports = {
         url:        p.source?.canonicalUrl || null,
         price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
         image_url:  p.medias?.[0]?.url || null,
-        category:   this.categoryMap[rawCat] || rawCat || null,
+        category:   (() => { const c = this.categoryMap[rawCat] || rawCat || null; return c && /^\d+$/.test(String(c).trim()) ? null : c; })(),
         tags:       normalizeTags(p.tags),
       };
     },
