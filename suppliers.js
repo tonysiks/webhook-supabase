@@ -153,7 +153,7 @@ module.exports = {
   notanotherwholesale: {
     name: 'Not Another Wholesale',
     taskId: 'H9CXs9yMJcwVZln4b',
-    currency: 'GBP',
+    currency: 'EUR',
     mapProduct: (p) => ({
       title:      p.title || null,
       url:        p.source?.canonicalUrl || null,
