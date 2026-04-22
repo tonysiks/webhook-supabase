@@ -150,6 +150,20 @@ module.exports = {
     }),
   },
 
+  notanotherwholesale: {
+    name: 'Not Another Wholesale',
+    taskId: 'H9CXs9yMJcwVZln4b',
+    currency: 'GBP',
+    mapProduct: (p) => ({
+      title:      p.title || null,
+      url:        p.source?.canonicalUrl || null,
+      price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
+      image_url:  p.medias?.[0]?.url || null,
+      category:   p.categories?.[0] || null,
+      tags:       normalizeTags(p.tags),
+    }),
+  },
+
   vintagewholesaleeurope: {
     name: 'Vintage Wholesale Europe',
     taskId: 've45qjTMf2dNvg9Lg',
