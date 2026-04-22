@@ -108,14 +108,17 @@ module.exports = {
     name: 'United Vintage',
     taskId: 'LxceDObj8RyvS5I0b',
     currency: 'EUR',
-    mapProduct: (p) => ({
+    mapProduct: (p) => {
+      const rawUrl = p.source?.canonicalUrl || null;
+      return {
       title:      p.title || null,
-      url:        p.source?.canonicalUrl || null,
+      url:        rawUrl ? (rawUrl.startsWith('http') ? rawUrl : `https://www.${rawUrl}`) : null,
       price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
       category:   p.categories?.[0] || null,
       tags:       normalizeTags(p.tags),
-    }),
+      };
+    },
   },
 
   tagz: {
