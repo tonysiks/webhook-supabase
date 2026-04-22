@@ -15,6 +15,58 @@ headers = {
     "Prefer": "return=minimal"
 }
 
+# Chaque entrée : (liste de mots-clés EN à détecter, liste de traductions FR/ES/IT/DE/PT/EN)
+WORD_TRANSLATIONS = [
+    # Saisons
+    (["SPRING"],      ["spring", "printemps", "primavera", "primavera", "Frühling", "primavera"]),
+    (["SUMMER"],      ["summer", "été", "verano", "estate", "Sommer", "verão"]),
+    (["AUTUMN", "FALL"], ["autumn", "fall", "automne", "otoño", "autunno", "Herbst", "outono"]),
+    (["WINTER"],      ["winter", "hiver", "invierno", "inverno", "Winter", "inverno"]),
+    # Couleurs
+    (["BLACK"],       ["black", "noir", "negro", "nero", "schwarz", "preto"]),
+    (["WHITE"],       ["white", "blanc", "blanco", "bianco", "weiß", "branco"]),
+    (["GREY", "GRAY"], ["grey", "gray", "gris", "gris", "grigio", "grau", "cinza"]),
+    (["BLUE"],        ["blue", "bleu", "azul", "blu", "blau", "azul"]),
+    (["RED"],         ["red", "rouge", "rojo", "rosso", "rot", "vermelho"]),
+    (["GREEN"],       ["green", "vert", "verde", "verde", "grün", "verde"]),
+    (["BROWN"],       ["brown", "marron", "marrón", "marrone", "braun", "marrom"]),
+    (["BEIGE"],       ["beige", "beige", "beige", "beige", "beige", "bege"]),
+    (["ORANGE"],      ["orange", "orange", "naranja", "arancione", "orange", "laranja"]),
+    (["YELLOW"],      ["yellow", "jaune", "amarillo", "giallo", "gelb", "amarelo"]),
+    (["PINK"],        ["pink", "rose", "rosa", "rosa", "rosa", "rosa"]),
+    (["PURPLE"],      ["purple", "violet", "morado", "viola", "lila", "roxo"]),
+    (["NAVY"],        ["navy", "marine", "azul marino", "blu navy", "marine", "azul marinho"]),
+    (["KHAKI"],       ["khaki", "kaki", "caqui", "kaki", "khaki", "caqui"]),
+    # Styles / occasions
+    (["CASUAL"],      ["casual", "casual", "casual", "casual", "casual", "casual"]),
+    (["SPORT", "ATHLETIC"], ["sport", "sportswear", "sport", "deportivo", "sportivo", "Sport", "esportivo"]),
+    (["STREETWEAR"],  ["streetwear", "street", "streetwear", "streetwear", "streetwear", "streetwear"]),
+    (["WORKWEAR"],    ["workwear", "travail", "trabajo", "lavoro", "Arbeitskleidung", "trabalho"]),
+    (["OUTDOOR"],     ["outdoor", "plein air", "exterior", "outdoor", "outdoor", "outdoor"]),
+    (["GRAPHIC"],     ["graphic", "graphique", "gráfico", "grafico", "grafisch", "gráfico"]),
+    (["OVERSIZED"],   ["oversized", "oversize", "grande taille", "talla grande", "oversize", "Übergröße", "tamanho grande"]),
+    (["EMBROIDERED", "EMBROIDERY"], ["embroidered", "brodé", "bordado", "ricamato", "bestickt", "bordado"]),
+    (["PATCHWORK"],   ["patchwork", "patchwork", "patchwork", "patchwork", "patchwork", "patchwork"]),
+    (["STRIPED"],     ["striped", "rayé", "a rayas", "a righe", "gestreift", "listrado"]),
+    (["PLAID", "CHECKED", "CHECKERED"], ["plaid", "checked", "carreaux", "cuadros", "quadri", "kariert", "xadrez"]),
+    (["FLORAL"],      ["floral", "fleuri", "floral", "floreale", "geblümt", "floral"]),
+    (["WASHED"],      ["washed", "délavé", "lavado", "lavato", "gewaschen", "lavado"]),
+    (["DISTRESSED"],  ["distressed", "usé", "desgastado", "consumato", "verwaschen", "desgastado"]),
+    # Matières
+    (["COTTON"],      ["cotton", "coton", "algodón", "cotone", "Baumwolle", "algodão"]),
+    (["WOOL"],        ["wool", "laine", "lana", "lana", "Wolle", "lã"]),
+    (["SILK"],        ["silk", "soie", "seda", "seta", "Seide", "seda"]),
+    (["NYLON"],       ["nylon", "nylon", "nylon", "nylon", "Nylon", "nylon"]),
+    (["POLYESTER"],   ["polyester", "polyester", "poliéster", "poliestere", "Polyester", "poliéster"]),
+    # Formats
+    (["BUNDLE", "LOT", "PACK"], ["bundle", "lot", "lote", "lotto", "Paket", "lote"]),
+    (["BALE"],        ["bale", "balle", "fardo", "balla", "Ballen", "fardo"]),
+    (["GRADE"],       ["grade", "qualité", "calidad", "qualità", "Qualität", "qualidade"]),
+    (["WHOLESALE"],   ["wholesale", "gros", "mayoreo", "ingrosso", "Großhandel", "atacado"]),
+    (["DEADSTOCK"],   ["deadstock", "stock mort", "deadstock", "deadstock", "deadstock", "deadstock"]),
+    (["SECOND HAND", "SECONDHAND", "USED"], ["second hand", "seconde main", "segunda mano", "seconda mano", "secondhand", "segunda mão"]),
+]
+
 def generate_tags(title):
     t = title.upper()
     tags = []
@@ -196,6 +248,11 @@ def generate_tags(title):
         tags += ["polo"]
     if "BAND" in t or "MUSIC" in t:
         tags += ["band", "music", "rock", "vintage", "musique", "música", "musica"]
+
+    # === TRADUCTIONS MULTILINGUES (EN → FR/ES/IT/DE/PT) ===
+    for keywords, translations in WORD_TRANSLATIONS:
+        if any(kw in t for kw in keywords):
+            tags += translations
 
     return " ".join(sorted(set(tags)))
 
