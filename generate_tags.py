@@ -258,31 +258,31 @@ def generate_tags(title):
 
 CATEGORY_KEYWORDS = [
     # T-shirts — avant "shirt" pour éviter les faux positifs
-    (["t-shirt", "tshirt", "t shirt", "tee shirt", " tee"], "T-Shirt"),
-    # Sweats / hoodies — avant "pull" et "sweater"
-    (["sweatshirt", "sweat shirt", "hoodie", "hoody", "hooded sweat", "crewneck"], "Sweatshirt"),
-    # Vestes — avant "coat" et "blazer" génériques
+    (["t-shirt", "tshirt", "t shirt", "tee shirt", " tee"], "T-shirt"),
+    # Sweats / hoodies — avant "sweater" et "pullover"
+    (["sweatshirt", "sweat shirt", "hoodie", "hoody", "hooded sweat", "crewneck"], "Sweat-shirt"),
+    # Vestes
     (["jacket", "veste", "bomber", "blazer", "anorak", "windbreaker", "gilet", "waistcoat", "bodywarmer"], "Veste"),
     # Manteaux
     (["coat", "manteau", "parka", "overcoat", "trench"], "Manteau"),
     # Pulls / tricots
-    (["knitwear", "knit", "pullover", "sweater", "jumper", "sweter", "pull "], "Pull"),
-    # Chemises
+    (["knitwear", "knit", "pullover", "sweater", "jumper", "pull "], "Pull"),
+    # Polo
+    (["polo"], "Polo"),
+    # Chemises — après t-shirt et sweatshirt
     (["shirt", "chemise", "flannel", "blouse", "overshirt"], "Chemise"),
-    # Pantalons — jean/shorts séparés après
-    (["trouser", "pant", "jean", "denim", "chino", "cargo pant", "jogger", "legging"], "Pantalon"),
+    # Pantalons
+    (["trouser", "pant", "jean", "denim", "chino", "cargo", "jogger", "trackpant", "track pant", "legging"], "Pantalon"),
     # Shorts
     (["short"], "Short"),
-    # Robes
-    (["dress", "robe"], "Robe"),
-    # Jupes
-    (["skirt", "jupe"], "Jupe"),
+    # Robes / jupes
+    (["dress", "robe", "skirt", "jupe"], "Robe"),
     # Chaussures
-    (["shoe", "boot", "sneaker", "trainer", "footwear", "chaussure", "basket"], "Chaussures"),
+    (["sneaker", "shoe", "boot", "trainer", "footwear", "chaussure", "basket"], "Chaussures"),
     # Mix / lots
-    (["bundle", "mix", "lot ", "kilo", "bale", "sack", "bag of", "pack of", "assort"], "Mix"),
-    # Accessoires (casquettes, chapeaux…) — en dernier
-    (["cap", "hat", "beanie", "bonnet", "casquette", "chapeau", "scarf", "echarpe", "glove", "gant"], "Accessoire"),
+    (["bundle", "mix", "lot ", "kilo", "bale", "sack ", "bag of", "pack of", "assort"], "Mix"),
+    # Accessoires — en dernier
+    (["cap", "hat", "beanie", "bonnet", "casquette", "chapeau", "scarf", "glove"], "Accessoire"),
 ]
 
 def infer_category(title):
