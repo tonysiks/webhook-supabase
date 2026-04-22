@@ -124,7 +124,7 @@ module.exports = {
   tagz: {
     name: 'TAGZ',
     taskId: 'VcGcp2dhCTW0w2VUN',
-    currency: 'GBP',
+    currency: 'EUR',
     mapProduct: (p) => ({
       title:      p.title || null,
       url:        p.source?.canonicalUrl || null,
