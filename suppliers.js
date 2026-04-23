@@ -111,7 +111,7 @@ module.exports = {
     mapProduct: (p) => {
       return {
       title:      p.title || null,
-      url:        p.source?.canonicalUrl ? `https://www.united-vintage.com${new URL(p.source.canonicalUrl).pathname}` : null,
+      url:        p.url ? `https://www.united-vintage.com${new URL(p.url).pathname}` : null,
       price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
       category:   p.categories?.[0] || null,
