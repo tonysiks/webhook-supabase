@@ -111,7 +111,7 @@ module.exports = {
     mapProduct: (p) => {
       return {
       title:      p.title || null,
-      url:        (() => { const raw = p.url || p.source?.canonicalUrl || (p.handle ? `https://www.united-vintage.com/products/${p.handle}` : null); return raw ? `https://www.united-vintage.com${new URL(raw.startsWith('http') ? raw : 'https://www.united-vintage.com' + raw).pathname}` : null; })(),
+      url:        p.source?.canonicalUrl || null,
       price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
       category:   p.categories?.[0] || null,
