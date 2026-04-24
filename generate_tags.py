@@ -294,6 +294,51 @@ def infer_category(title):
             return category
     return "Accessoire"
 
+def infer_categories(title):
+    if not title:
+        return ["accessoire"]
+    t = title.lower()
+
+    is_mix = any(kw in t for kw in ["bundle", "mix", "kilo", "bale", "sack", "pack of", "assort"])
+
+    cats = []
+    if any(kw in t for kw in ["jean", "denim"]):
+        cats = ["jean", "pantalon"]
+    elif any(kw in t for kw in ["jogger", "jogging", "trackpant", "track pant", "tracksuit", "survêtement"]):
+        cats = ["jogging", "pantalon"]
+    elif any(kw in t for kw in ["trouser", "pant", "chino", "cargo", "legging"]):
+        cats = ["pantalon"]
+    elif any(kw in t for kw in ["short", "maillot de bain", "swimwear", "swim short", "boardshort"]):
+        cats = ["short"]
+    elif "maillot" in t and "maillot de bain" not in t:
+        cats = ["tshirt"]
+    elif any(kw in t for kw in ["t-shirt", "tshirt", "t shirt", "tee", "haut", "tops", "top"]):
+        cats = ["tshirt"]
+    elif any(kw in t for kw in ["sweatshirt", "sweat shirt", "hoodie", "crewneck"]):
+        cats = ["sweat"]
+    elif any(kw in t for kw in ["jacket", "veste", "bomber", "blazer", "anorak", "windbreaker"]):
+        cats = ["veste"]
+    elif any(kw in t for kw in ["coat", "manteau", "parka"]):
+        cats = ["manteau"]
+    elif any(kw in t for kw in ["knitwear", "knit", "pullover", "sweater", "jumper"]):
+        cats = ["pull"]
+    elif "polo" in t:
+        cats = ["polo"]
+    elif any(kw in t for kw in ["shirt", "chemise", "flannel", "overshirt"]):
+        if not any(kw in t for kw in ["sweatshirt", "tshirt", "t-shirt"]):
+            cats = ["chemise"]
+    elif any(kw in t for kw in ["dress", "robe", "skirt", "jupe"]):
+        cats = ["robe"]
+    elif any(kw in t for kw in ["sneaker", "shoe", "boot", "trainer", "chaussure"]):
+        cats = ["chaussures"]
+    elif any(kw in t for kw in ["cap", "hat", "beanie", "bonnet", "casquette", "scarf", "glove", "belt", "wallet"]):
+        cats = ["accessoire"]
+
+    if is_mix:
+        return (cats + ["mix"]) if cats else ["mix"]
+
+    return cats if cats else ["accessoire"]
+
 # Récupérer tous les produits (régénération complète des tags)
 FETCH_BATCH = 1000
 print("Récupération de tous les produits...")
@@ -331,6 +376,7 @@ for p in all_products:
         "id": p['id'],
         "tags": generate_tags(p['title']),
         "category": category if category else infer_category(p['title']),
+        "categories": infer_categories(p['title']),
     })
 
 print(f"   Tags générés, mise à jour en cours...")
@@ -339,7 +385,7 @@ for p in rows:
     resp = requests.patch(
         f"{SUPABASE_URL}/rest/v1/produits?id=eq.{p['id']}",
         headers=headers,
-        json={"tags": p['tags'], "category": p['category']}
+        json={"tags": p['tags'], "category": p['category'], "categories": p['categories']}
     )
     if resp.status_code == 204:
         total += 1
