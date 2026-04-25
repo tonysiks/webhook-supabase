@@ -179,7 +179,7 @@ module.exports = {
 
   placewholesale: {
     name: 'PlaceWholesale',
-    taskId: 'jxTJ7Pzhuv2Bj8xT1',
+    taskId: 'tonysiks~place-wholesale',
     currency: 'EUR',
     mapProduct: (p) => ({
       title:      p.title || null,
