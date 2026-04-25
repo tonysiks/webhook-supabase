@@ -274,7 +274,7 @@ CATEGORY_KEYWORDS = [
     # Pantalons
     (["trouser", "pant", "jean", "denim", "chino", "cargo", "jogger", "trackpant", "track pant", "legging"], "Pantalon"),
     # Shorts
-    (["short"], "Short"),
+    (["short", "capri", "capris"], "Short"),
     # Robes / jupes
     (["dress", "robe", "skirt", "jupe"], "Robe"),
     # Chaussures
@@ -308,7 +308,7 @@ def infer_categories(title):
         cats = ["jogging", "pantalon"]
     elif any(kw in t for kw in ["trouser", "pant", "chino", "cargo", "legging"]):
         cats = ["pantalon"]
-    elif any(kw in t for kw in ["short", "maillot de bain", "swimwear", "swim short", "boardshort"]):
+    elif any(kw in t for kw in ["short", "maillot de bain", "swimwear", "swim short", "boardshort", "capri", "capris"]):
         cats = ["short"]
     elif "maillot" in t and "maillot de bain" not in t:
         cats = ["tshirt"]
