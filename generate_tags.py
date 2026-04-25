@@ -278,7 +278,7 @@ CATEGORY_KEYWORDS = [
     # Robes / jupes
     (["dress", "robe", "skirt", "jupe"], "Robe"),
     # Chaussures
-    (["sneaker", "shoe", "boot", "trainer", "footwear", "chaussure", "basket"], "Chaussures"),
+    (["sneaker", "shoe", "boot", "trainer", "footwear", "chaussure", "basket "], "Chaussures"),
     # Mix / lots
     (["bundle", "mix", "lot ", "kilo", "bale", "sack ", "bag of", "pack of", "assort"], "Mix"),
     # Accessoires — en dernier
