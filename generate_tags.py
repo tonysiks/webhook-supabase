@@ -299,7 +299,7 @@ def infer_categories(title):
         return ["accessoire"]
     t = title.lower()
 
-    is_box = "box" in t
+    is_box = "box" in t or "bale" in t
     is_mix = is_box or any(kw in t for kw in ["bundle", "mix", "kilo", "bale", "sack", "pack of", "assort"])
 
     cats = []
