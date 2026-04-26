@@ -381,7 +381,7 @@ for p in all_products:
     rows.append({
         "id": p['id'],
         "tags": generate_tags(p['title']),
-        "category": category if category else infer_category(p['title']),
+        "category": infer_category(p['title']),
         "categories": infer_categories(p['title']),
     })
 
