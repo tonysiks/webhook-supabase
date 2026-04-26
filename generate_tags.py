@@ -299,7 +299,8 @@ def infer_categories(title):
         return ["accessoire"]
     t = title.lower()
 
-    is_mix = any(kw in t for kw in ["bundle", "mix", "kilo", "bale", "sack", "pack of", "assort"])
+    is_box = "box" in t
+    is_mix = is_box or any(kw in t for kw in ["bundle", "mix", "kilo", "bale", "sack", "pack of", "assort"])
 
     cats = []
     if any(kw in t for kw in ["jean", "denim"]):
@@ -316,11 +317,13 @@ def infer_categories(title):
         cats = ["tshirt"]
     elif any(kw in t for kw in ["sweatshirt", "sweat shirt", "hoodie", "crewneck"]):
         cats = ["sweat"]
-    elif any(kw in t for kw in ["jacket", "veste", "bomber", "blazer", "anorak", "windbreaker"]):
+    elif any(kw in t for kw in ["jacket", "veste", "bomber", "blazer", "anorak", "windbreaker", "cardigan", "coupe-vent", "coupe vent"]):
         cats = ["veste"]
+    elif any(kw in t for kw in ["polaire", "fleece", "polar"]):
+        cats = ["polaire", "veste"]
     elif any(kw in t for kw in ["coat", "manteau", "parka"]):
         cats = ["manteau"]
-    elif any(kw in t for kw in ["knitwear", "knit", "pullover", "sweater", "jumper"]):
+    elif any(kw in t for kw in ["knitwear", "knit", "pullover", "sweater", "jumper", "pull", "laine", "wool"]):
         cats = ["pull"]
     elif "polo" in t:
         cats = ["polo"]
@@ -334,10 +337,13 @@ def infer_categories(title):
     elif any(kw in t for kw in ["cap", "hat", "beanie", "bonnet", "casquette", "scarf", "glove", "belt", "wallet"]):
         cats = ["accessoire"]
 
+    extra = []
+    if is_box:
+        extra.append("box")
     if is_mix:
-        return (cats + ["mix"]) if cats else ["mix"]
+        extra.append("mix")
 
-    return cats if cats else ["accessoire"]
+    return (extra + cats) if (extra or cats) else ["accessoire"]
 
 # Récupérer tous les produits (régénération complète des tags)
 FETCH_BATCH = 1000
