@@ -258,21 +258,23 @@ def generate_tags(title):
 
 CATEGORY_KEYWORDS = [
     # T-shirts — avant "shirt" pour éviter les faux positifs
-    (["t-shirt", "tshirt", "t shirt", "tee shirt", " tee"], "T-shirt"),
+    (["t-shirt", "tshirt", "t shirt", "tee shirt", " tee", "blouse"], "T-shirt"),
     # Sweats / hoodies — avant "sweater" et "pullover"
     (["sweatshirt", "sweat shirt", "hoodie", "hoody", "hooded sweat", "crewneck"], "Sweat-shirt"),
     # Vestes
-    (["jacket", "veste", "bomber", "blazer", "anorak", "windbreaker", "gilet", "waistcoat", "bodywarmer"], "Veste"),
+    (["jacket", "veste", "bomber", "blazer", "anorak", "windbreaker", "gilet", "waistcoat", "bodywarmer", "vest", "denali"], "Veste"),
     # Manteaux
     (["coat", "manteau", "parka", "overcoat", "trench"], "Manteau"),
     # Pulls / tricots
-    (["knitwear", "knit", "pullover", "sweater", "jumper", "pull "], "Pull"),
+    (["knitwear", "knit", "pullover", "sweater", "jumper", "pull ", "quarter zip", "quarter-zip", "1/4 zip", "quart zip", "qzip"], "Pull"),
     # Polo
     (["polo"], "Polo"),
     # Chemises — après t-shirt et sweatshirt
-    (["shirt", "chemise", "flannel", "blouse", "overshirt"], "Chemise"),
+    (["shirt", "chemise", "flannel", "overshirt"], "Chemise"),
+    # Combinaisons / salopettes
+    (["dungaree", "salopette", "coverall", "combinaison"], "Combinaison"),
     # Pantalons
-    (["trouser", "pant", "jean", "denim", "chino", "cargo", "jogger", "trackpant", "track pant", "legging", "bottoms"], "Pantalon"),
+    (["trouser", "pant", "jean", "denim", "chino", "cargo", "jogger", "trackpant", "track pant", "legging", "bottoms", "pyjama", "pajama", "scrub", " rag"], "Pantalon"),
     # Shorts
     (["short", "capri", "capris"], "Short"),
     # Robes / jupes
@@ -289,6 +291,8 @@ def infer_category(title):
     if not title:
         return "Accessoire"
     t = title.lower()
+    if "jersey" in t and "maillot de bain" not in t:
+        return "T-shirt"
     for keywords, category in CATEGORY_KEYWORDS:
         if any(kw in t for kw in keywords):
             return category
@@ -303,27 +307,29 @@ def infer_categories(title):
     is_mix = is_box or any(kw in t for kw in ["bundle", "mix", "kilo", "bale", "sack", "pack of", "assort"])
 
     cats = []
-    if any(kw in t for kw in ["jean", "denim"]):
+    if any(kw in t for kw in ["dungaree", "salopette", "coverall", "combinaison"]):
+        cats = ["combinaison"]
+    elif any(kw in t for kw in ["jean", "denim"]):
         cats = ["jean", "pantalon"]
     elif any(kw in t for kw in ["jogger", "jogging", "trackpant", "track pant", "tracksuit", "survêtement"]):
         cats = ["jogging", "pantalon"]
-    elif any(kw in t for kw in ["trouser", "pant", "chino", "cargo", "legging", "bottoms"]):
+    elif any(kw in t for kw in ["trouser", "pant", "chino", "cargo", "legging", "bottoms", "pyjama", "pajama", "scrub", " rag"]):
         cats = ["pantalon"]
     elif any(kw in t for kw in ["short", "maillot de bain", "swimwear", "swim short", "boardshort", "capri", "capris"]):
         cats = ["short"]
-    elif "maillot" in t and "maillot de bain" not in t:
+    elif any(kw in t for kw in ["maillot", "jersey"]) and "maillot de bain" not in t:
         cats = ["tshirt"]
-    elif any(kw in t for kw in ["t-shirt", "tshirt", "t shirt", "tee", "haut", "tops", "top"]):
+    elif any(kw in t for kw in ["t-shirt", "tshirt", "t shirt", "tee", "haut", "tops", "top", "blouse"]):
         cats = ["tshirt"]
     elif any(kw in t for kw in ["sweatshirt", "sweat shirt", "hoodie", "crewneck"]):
         cats = ["sweat"]
-    elif any(kw in t for kw in ["jacket", "veste", "bomber", "blazer", "anorak", "windbreaker", "cardigan", "coupe-vent", "coupe vent"]):
+    elif any(kw in t for kw in ["jacket", "veste", "bomber", "blazer", "anorak", "windbreaker", "cardigan", "coupe-vent", "coupe vent", "gilet", "vest", "denali"]):
         cats = ["veste"]
     elif any(kw in t for kw in ["polaire", "fleece", "polar"]):
         cats = ["polaire", "veste"]
     elif any(kw in t for kw in ["coat", "manteau", "parka"]):
         cats = ["manteau"]
-    elif any(kw in t for kw in ["knitwear", "knit", "pullover", "sweater", "jumper", "pull", "laine", "wool"]):
+    elif any(kw in t for kw in ["knitwear", "knit", "pullover", "sweater", "jumper", "pull", "laine", "wool", "quarter zip", "quarter-zip", "1/4 zip", "quart zip", "qzip"]):
         cats = ["pull"]
     elif "polo" in t:
         cats = ["polo"]
