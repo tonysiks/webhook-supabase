@@ -208,7 +208,7 @@ module.exports = {
   vesuvius: {
     name: 'Vesuvius',
     taskId: 'tonysiks~vesuvius-vintage-wholesale',
-    currency: 'USD',
+    currency: 'EUR',
     mapProduct: (p) => ({
       title:      p.title || null,
       url:        p.source?.canonicalUrl || null,
