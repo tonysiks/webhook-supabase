@@ -205,6 +205,20 @@ module.exports = {
     }),
   },
 
+  vintageboxmarket: {
+    name: 'Vintage Box Market',
+    taskId: 'tonysiks~vintage-box-market',
+    currency: 'EUR',
+    mapProduct: (p) => ({
+      title:      p.title || null,
+      url:        p.source?.canonicalUrl || null,
+      price:      p.variants?.[0]?.price?.current ? p.variants[0].price.current / 100 : null,
+      image_url:  p.medias?.[0]?.url || null,
+      category:   p.categories?.[0] || null,
+      tags:       normalizeTags(p.tags),
+    }),
+  },
+
   skullwholesale: {
     name: 'Skull Wholesale',
     taskId: 'tonysiks~skull-wholesale',
