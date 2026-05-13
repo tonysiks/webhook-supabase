@@ -220,7 +220,6 @@ async function main() {
         const rate = rates[supplier.currency] ?? 1;
         const now = new Date().toISOString();
         const products = items
-          .filter(p => p.title)
           .map(p => {
             const mapped = supplier.mapProduct(p);
             return {
@@ -228,10 +227,10 @@ async function main() {
               price: mapped.price != null ? Math.round(mapped.price * rate * 100) / 100 : null,
               fournisseur: supplier.name,
               scraped_at: now,
-              tags: generateTags(p.title),
+              tags: generateTags(mapped.title),
             };
           })
-          .filter(p => p.url);
+          .filter(p => p.title && p.url);
 
         await upsertProducts(products);
         console.log(`  ✅ ${products.length} produits importés avec tags`);
