@@ -336,6 +336,21 @@ module.exports = {
     }),
   },
 
+  ausvintage: {
+    name: 'Aus Vintage Wholesale',
+    taskId: 'tonysiks~aus-vintage-wholesale',
+    currency: 'USD',
+    mapProduct: (p) => ({
+      title:      p.title || null,
+      url:        p.source?.canonicalUrl || null,
+      price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
+      image_url:  p.medias?.[0]?.url || null,
+      category:   p.categories?.[0] || null,
+      tags:       normalizeTags(p.tags),
+      stockStatus: p.variants?.[0]?.price?.stockStatus || null,
+    }),
+  },
+
   // ── Template pour ajouter un nouveau fournisseur ──────────────────────────
   // new_supplier: {
   //   name: 'Nom du fournisseur',
