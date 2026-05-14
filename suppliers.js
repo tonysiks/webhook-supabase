@@ -428,7 +428,7 @@ module.exports = {
 
   bestvintage: {
     name: 'BestVintageWholesale',
-    taskId: 'tonysiks/best-vintage-wholesale',
+    taskId: 'tonysiks~best-vintage-wholesale',
     currency: 'USD',
     mapProduct: (p) => ({
       title:      p.title || null,
@@ -443,7 +443,7 @@ module.exports = {
 
   kzwholesale: {
     name: 'KZWholesale',
-    taskId: 'tonysiks/kz-wholesale',
+    taskId: 'tonysiks~kz-wholesale',
     currency: 'EUR',
     mapProduct: (p) => ({
       title:      p.title || null,
@@ -458,7 +458,7 @@ module.exports = {
 
   cmretrowholesale: {
     name: 'CMRetroWholesale',
-    taskId: 'tonysiks/cm-retro-wholesale',
+    taskId: 'tonysiks~cm-retro-wholesale',
     currency: 'USD',
     mapProduct: (p) => ({
       title:      p.title || null,
@@ -473,7 +473,7 @@ module.exports = {
 
   thevintagewholesalecompany: {
     name: 'TheVintageWholesaleCompany',
-    taskId: 'tonysiks/the-vintage-wholesale-company',
+    taskId: 'tonysiks~the-vintage-wholesale-company',
     currency: 'USD',
     mapProduct: (p) => ({
       title:      p.title || null,
