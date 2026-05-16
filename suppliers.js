@@ -613,6 +613,20 @@ module.exports = {
     }),
   },
 
+  onevintagewholesale: {
+    name: 'OneVintageWholesale',
+    taskId: 'tonysiks~one-vintage-wholesale',
+    currency: 'EUR',
+    mapProduct: (p) => ({
+      title:      p.name || null,
+      url:        p.url || null,
+      price:      p.price || null,
+      image_url:  p.featuredImage || null,
+      fournisseur: 'OneVintageWholesale',
+      stockStatus: p.available ? 'InStock' : 'OutOfStock',
+    }),
+  },
+
   // ── Template pour ajouter un nouveau fournisseur ──────────────────────────
   // new_supplier: {
   //   name: 'Nom du fournisseur',
