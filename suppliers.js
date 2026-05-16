@@ -501,6 +501,20 @@ module.exports = {
     }),
   },
 
+  boomvintagewholesale: {
+    name: 'BoomVintageWholesale',
+    taskId: 'tonysiks~boom-vintage-wholesale',
+    currency: 'GBP',
+    mapProduct: (p) => ({
+      title:      p.title || null,
+      url:        p.source?.canonicalUrl || null,
+      price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
+      image_url:  p.medias?.[0]?.url || null,
+      fournisseur: 'BoomVintageWholesale',
+      stockStatus: p.variants?.[0]?.price?.stockStatus || null,
+    }),
+  },
+
   // ── Template pour ajouter un nouveau fournisseur ──────────────────────────
   // new_supplier: {
   //   name: 'Nom du fournisseur',
