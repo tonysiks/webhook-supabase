@@ -629,7 +629,7 @@ module.exports = {
 
   ggvintagewholesale: {
     name: 'GGVintageWholesale',
-    taskId: 'gg-vintage-wholesale',
+    taskId: 'tonysiks~gg-vintage-wholesale',
     currency: 'EUR',
     mapProduct: (p) => ({
       title:      p.title || null,
