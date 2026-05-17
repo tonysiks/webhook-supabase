@@ -627,6 +627,20 @@ module.exports = {
     }),
   },
 
+  torgomvintage: {
+    name: 'TorgomVintage',
+    taskId: 'tonysiks/torgom-vintage',
+    currency: 'USD',
+    mapProduct: (p) => ({
+      title:      p.title || null,
+      url:        p.source?.canonicalUrl || null,
+      price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
+      image_url:  p.medias?.[0]?.url || null,
+      fournisseur: 'TorgomVintage',
+      stockStatus: p.variants?.[0]?.price?.stockStatus || null,
+    }),
+  },
+
   thriftbundlez: {
     name: 'ThriftBundlez',
     taskId: 'tonysiks/thrift-bundlez',
