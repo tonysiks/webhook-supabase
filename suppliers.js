@@ -627,6 +627,20 @@ module.exports = {
     }),
   },
 
+  ventorbox: {
+    name: 'VentorBox',
+    taskId: 'tonysiks~ventor-box',
+    currency: 'EUR',
+    mapProduct: (p) => ({
+      title:      p.title || null,
+      url:        p.source?.canonicalUrl || null,
+      price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
+      image_url:  p.medias?.[0]?.url || null,
+      fournisseur: 'VentorBox',
+      stockStatus: p.variants?.[0]?.price?.stockStatus || null,
+    }),
+  },
+
   repeatvintagewholesale: {
     name: 'RepeatVintageWholesale',
     taskId: 'tonysiks~repeat-vintage-wholesale',
