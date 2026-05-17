@@ -627,6 +627,20 @@ module.exports = {
     }),
   },
 
+  tobewornagain: {
+    name: 'ToBeWornAgain',
+    taskId: 'tonysiks/to-be-worn-again',
+    currency: 'GBP',
+    mapProduct: (p) => ({
+      title:      p.title || null,
+      url:        p.source?.canonicalUrl || null,
+      price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
+      image_url:  p.medias?.[0]?.url || null,
+      fournisseur: 'ToBeWornAgain',
+      stockStatus: p.variants?.[0]?.price?.stockStatus || null,
+    }),
+  },
+
   pickvintagewholesale: {
     name: 'PickVintageWholesale',
     taskId: 'tonysiks/pick-vintage-wholesale',
