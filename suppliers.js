@@ -627,6 +627,20 @@ module.exports = {
     }),
   },
 
+  dublinwholesalevintage: {
+    name: 'DublinWholesaleVintage',
+    taskId: 'tonysiks~dublin-wholesale-vintage',
+    currency: 'EUR',
+    mapProduct: (p) => ({
+      title:      p.title || null,
+      url:        p.source?.canonicalUrl || null,
+      price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
+      image_url:  p.medias?.[0]?.url || null,
+      fournisseur: 'DublinWholesaleVintage',
+      stockStatus: p.variants?.[0]?.price?.stockStatus || null,
+    }),
+  },
+
   ventorbox: {
     name: 'VentorBox',
     taskId: 'tonysiks~ventor-box',
