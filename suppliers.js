@@ -629,7 +629,7 @@ module.exports = {
 
   repeatvintagewholesale: {
     name: 'RepeatVintageWholesale',
-    taskId: 'tonysiks/repeat-vintage-wholesale',
+    taskId: 'tonysiks~repeat-vintage-wholesale',
     currency: 'USD',
     mapProduct: (p) => ({
       title:      p.title || null,
@@ -643,7 +643,7 @@ module.exports = {
 
   tobewornagain: {
     name: 'ToBeWornAgain',
-    taskId: 'tonysiks/to-be-worn-again',
+    taskId: 'tonysiks~to-be-worn-again',
     currency: 'GBP',
     mapProduct: (p) => ({
       title:      p.title || null,
@@ -657,7 +657,7 @@ module.exports = {
 
   pickvintagewholesale: {
     name: 'PickVintageWholesale',
-    taskId: 'tonysiks/pick-vintage-wholesale',
+    taskId: 'tonysiks~pick-vintage-wholesale',
     currency: 'GBP',
     mapProduct: (p) => ({
       title:      p.title || null,
@@ -671,7 +671,7 @@ module.exports = {
 
   torgomvintage: {
     name: 'TorgomVintage',
-    taskId: 'tonysiks/torgom-vintage',
+    taskId: 'tonysiks~torgom-vintage',
     currency: 'USD',
     mapProduct: (p) => ({
       title:      p.title || null,
@@ -685,7 +685,7 @@ module.exports = {
 
   thriftbundlez: {
     name: 'ThriftBundlez',
-    taskId: 'tonysiks/thrift-bundlez',
+    taskId: 'tonysiks~thrift-bundlez',
     currency: 'USD',
     mapProduct: (p) => ({
       title:      p.title || null,
