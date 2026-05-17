@@ -627,6 +627,20 @@ module.exports = {
     }),
   },
 
+  vintagedepot: {
+    name: 'VintageDepot',
+    taskId: 'tonysiks~vintage-depot',
+    currency: 'GBP',
+    mapProduct: (p) => ({
+      title:      p.title || null,
+      url:        p.source?.canonicalUrl || null,
+      price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
+      image_url:  p.medias?.[0]?.url || null,
+      fournisseur: 'VintageDepot',
+      stockStatus: p.variants?.[0]?.price?.stockStatus || null,
+    }),
+  },
+
   vintagewholesaleuk: {
     name: 'VintageWholesaleUK',
     taskId: 'tonysiks~vintage-wholesale-uk',
