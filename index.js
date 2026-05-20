@@ -271,6 +271,23 @@ app.post('/stripe-webhook', async (req, res) => {
   }
 });
 
+// ── Statut abonné ─────────────────────────────────────────────────────────────
+app.get('/subscriber/:email', async (req, res) => {
+  const { email } = req.params;
+
+  const { data, error } = await supabase
+    .from('subscribers')
+    .select('email, plan, status, created_at, updated_at')
+    .eq('email', email)
+    .single();
+
+  if (error || !data) {
+    return res.status(404).json({ error: 'Abonné introuvable' });
+  }
+
+  res.json(data);
+});
+
 // ── Health check ──────────────────────────────────────────────────────────────
 app.get('/', (req, res) => {
   res.json({
