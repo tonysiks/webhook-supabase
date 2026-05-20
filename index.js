@@ -248,6 +248,22 @@ app.post('/stripe-webhook', async (req, res) => {
       console.log(`[StripeWebhook] customer.subscription.deleted — customer ${customerId} → canceled`);
     }
 
+    if (event.type === 'customer.subscription.updated') {
+      const subscription = event.data.object;
+      const customerId = subscription.customer;
+      const priceId = subscription.items.data[0]?.price?.id;
+
+      const newPlan = Object.entries(PLAN_PRICE_IDS).find(([, id]) => id === priceId)?.[0] ?? null;
+
+      const { error } = await supabase
+        .from('subscribers')
+        .update({ ...(newPlan && { plan: newPlan }), status: 'active' })
+        .eq('stripe_customer_id', customerId);
+
+      if (error) throw error;
+      console.log(`[StripeWebhook] customer.subscription.updated — customer ${customerId} → plan ${newPlan ?? '(inconnu)'}`);
+    }
+
     res.json({ received: true });
   } catch (e) {
     console.error('[StripeWebhook] Erreur traitement:', e.message);
