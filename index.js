@@ -172,12 +172,13 @@ app.post('/subscribe', async (req, res) => {
     }
 
     // Créer la checkout session
+    const successWithEmail = `${successUrl}${successUrl.includes('?') ? '&' : '?'}email=${encodeURIComponent(email)}`;
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       payment_method_types: ['card'],
       line_items: [{ price: priceId, quantity: 1 }],
       mode: 'subscription',
-      success_url: successUrl,
+      success_url: successWithEmail,
       cancel_url: cancelUrl,
     });
 
