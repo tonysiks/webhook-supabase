@@ -180,6 +180,7 @@ app.post('/subscribe', async (req, res) => {
       mode: 'subscription',
       success_url: successWithEmail,
       cancel_url: cancelUrl,
+      metadata: { email },
     });
 
     // Upsert le subscriber en Supabase
@@ -226,6 +227,7 @@ app.post('/stripe-webhook', async (req, res) => {
       const session = event.data.object;
       const customerId = session.customer;
       const subscriptionId = session.subscription;
+      const email = session.metadata?.email;
 
       const { error } = await supabase
         .from('subscribers')
@@ -233,7 +235,7 @@ app.post('/stripe-webhook', async (req, res) => {
         .eq('stripe_customer_id', customerId);
 
       if (error) throw error;
-      console.log(`[StripeWebhook] checkout.session.completed — customer ${customerId} → active`);
+      console.log(`[StripeWebhook] checkout.session.completed — customer ${customerId} email ${email ?? 'inconnu'} → active`);
     }
 
     if (event.type === 'customer.subscription.deleted') {
