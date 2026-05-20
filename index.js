@@ -4,7 +4,12 @@ const Stripe = require('stripe');
 const SUPPLIERS = require('./suppliers');
 
 const app = express();
-app.use(express.json({ limit: '50mb' }));
+app.use(express.json({
+  limit: '50mb',
+  verify: (req, _res, buf) => {
+    if (req.originalUrl === '/stripe-webhook') req.rawBody = buf;
+  },
+}));
 
 const supabase = createClient(
   'https://awzbegybkjfyobilvpgc.supabase.co',
@@ -191,6 +196,61 @@ app.post('/subscribe', async (req, res) => {
     res.json({ url: session.url });
   } catch (e) {
     console.error('[Subscribe] Erreur:', e.message);
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// ── Stripe webhook ────────────────────────────────────────────────────────────
+app.post('/stripe-webhook', async (req, res) => {
+  const sig = req.headers['stripe-signature'];
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
+  if (!webhookSecret) {
+    console.error('[StripeWebhook] STRIPE_WEBHOOK_SECRET non défini');
+    return res.status(500).json({ error: 'Webhook secret manquant' });
+  }
+
+  let event;
+  try {
+    event = Stripe(process.env.STRIPE_SECRET_KEY).webhooks.constructEvent(
+      req.rawBody, sig, webhookSecret
+    );
+  } catch (e) {
+    console.error('[StripeWebhook] Signature invalide:', e.message);
+    return res.status(400).json({ error: `Signature invalide : ${e.message}` });
+  }
+
+  try {
+    if (event.type === 'checkout.session.completed') {
+      const session = event.data.object;
+      const customerId = session.customer;
+      const subscriptionId = session.subscription;
+
+      const { error } = await supabase
+        .from('subscribers')
+        .update({ status: 'active', stripe_subscription_id: subscriptionId })
+        .eq('stripe_customer_id', customerId);
+
+      if (error) throw error;
+      console.log(`[StripeWebhook] checkout.session.completed — customer ${customerId} → active`);
+    }
+
+    if (event.type === 'customer.subscription.deleted') {
+      const subscription = event.data.object;
+      const customerId = subscription.customer;
+
+      const { error } = await supabase
+        .from('subscribers')
+        .update({ status: 'canceled', stripe_subscription_id: null })
+        .eq('stripe_customer_id', customerId);
+
+      if (error) throw error;
+      console.log(`[StripeWebhook] customer.subscription.deleted — customer ${customerId} → canceled`);
+    }
+
+    res.json({ received: true });
+  } catch (e) {
+    console.error('[StripeWebhook] Erreur traitement:', e.message);
     res.status(500).json({ error: e.message });
   }
 });
