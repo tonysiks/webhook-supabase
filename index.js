@@ -78,7 +78,15 @@ app.post('/webhook', async (req, res) => {
 });
 
 // ── Stripe checkout session ───────────────────────────────────────────────────
+app.options('/create-checkout-session', (req, res) => {
+  res.set('Access-Control-Allow-Origin', '*');
+  res.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.set('Access-Control-Allow-Headers', 'Content-Type');
+  res.sendStatus(204);
+});
+
 app.post('/create-checkout-session', async (req, res) => {
+  res.set('Access-Control-Allow-Origin', '*');
   const { priceId, mode, successUrl, cancelUrl } = req.body;
 
   if (!priceId || !mode || !successUrl || !cancelUrl) {
