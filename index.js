@@ -1,5 +1,6 @@
 const express = require('express');
 const { createClient } = require('@supabase/supabase-js');
+const Stripe = require('stripe');
 const SUPPLIERS = require('./suppliers');
 
 const app = express();
@@ -74,6 +75,37 @@ app.post('/webhook', async (req, res) => {
       console.error(`[${supplier.name}] ❌ Erreur:`, e.message);
     }
   })();
+});
+
+// ── Stripe checkout session ───────────────────────────────────────────────────
+app.post('/create-checkout-session', async (req, res) => {
+  const { priceId, mode, successUrl, cancelUrl } = req.body;
+
+  if (!priceId || !mode || !successUrl || !cancelUrl) {
+    return res.status(400).json({ error: 'priceId, mode, successUrl and cancelUrl are required' });
+  }
+
+  if (!process.env.STRIPE_SECRET_KEY) {
+    console.error('[Stripe] STRIPE_SECRET_KEY is not set');
+    return res.status(500).json({ error: 'Stripe not configured' });
+  }
+
+  const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
+
+  try {
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: [{ price: priceId, quantity: 1 }],
+      mode,
+      success_url: successUrl,
+      cancel_url: cancelUrl,
+    });
+
+    res.json({ url: session.url });
+  } catch (e) {
+    console.error('[Stripe] Failed to create checkout session:', e.message);
+    res.status(500).json({ error: e.message });
+  }
 });
 
 // ── Health check ──────────────────────────────────────────────────────────────
