@@ -272,7 +272,15 @@ app.post('/stripe-webhook', async (req, res) => {
 });
 
 // ── Statut abonné ─────────────────────────────────────────────────────────────
+app.options('/subscriber/:email', (req, res) => {
+  res.set('Access-Control-Allow-Origin', '*');
+  res.set('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.set('Access-Control-Allow-Headers', 'Content-Type');
+  res.sendStatus(204);
+});
+
 app.get('/subscriber/:email', async (req, res) => {
+  res.set('Access-Control-Allow-Origin', '*');
   const { email } = req.params;
 
   const { data, error } = await supabase
