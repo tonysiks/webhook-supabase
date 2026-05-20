@@ -116,6 +116,85 @@ app.post('/create-checkout-session', async (req, res) => {
   }
 });
 
+// ── Subscribe : crée customer Stripe + checkout session + sauvegarde Supabase ─
+const PLAN_PRICE_IDS = {
+  starter_mensuel: process.env.STRIPE_PRICE_STARTER_MENSUEL,
+  starter_annuel:  process.env.STRIPE_PRICE_STARTER_ANNUEL,
+  business:        process.env.STRIPE_PRICE_BUSINESS,
+};
+
+app.options('/subscribe', (req, res) => {
+  res.set('Access-Control-Allow-Origin', '*');
+  res.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.set('Access-Control-Allow-Headers', 'Content-Type');
+  res.sendStatus(204);
+});
+
+app.post('/subscribe', async (req, res) => {
+  res.set('Access-Control-Allow-Origin', '*');
+  const { email, plan, successUrl, cancelUrl } = req.body;
+
+  if (!email || !plan || !successUrl || !cancelUrl) {
+    return res.status(400).json({ error: 'email, plan, successUrl et cancelUrl sont requis' });
+  }
+
+  const priceId = PLAN_PRICE_IDS[plan];
+  if (!priceId) {
+    return res.status(400).json({
+      error: `Plan invalide : "${plan}". Valeurs acceptées : ${Object.keys(PLAN_PRICE_IDS).join(', ')}`
+    });
+  }
+
+  if (!process.env.STRIPE_SECRET_KEY) {
+    return res.status(500).json({ error: 'Stripe non configuré' });
+  }
+
+  const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
+
+  try {
+    // Récupérer le subscriber existant en Supabase
+    const { data: existing } = await supabase
+      .from('subscribers')
+      .select('stripe_customer_id, status')
+      .eq('email', email)
+      .single();
+
+    // Créer ou réutiliser le customer Stripe
+    let customerId = existing?.stripe_customer_id;
+    if (!customerId) {
+      const customer = await stripe.customers.create({ email });
+      customerId = customer.id;
+    }
+
+    // Créer la checkout session
+    const session = await stripe.checkout.sessions.create({
+      customer: customerId,
+      payment_method_types: ['card'],
+      line_items: [{ price: priceId, quantity: 1 }],
+      mode: 'subscription',
+      success_url: successUrl,
+      cancel_url: cancelUrl,
+    });
+
+    // Upsert le subscriber en Supabase
+    const { error: dbError } = await supabase
+      .from('subscribers')
+      .upsert(
+        { email, stripe_customer_id: customerId, plan, status: 'inactive' },
+        { onConflict: 'email' }
+      );
+
+    if (dbError) {
+      console.error('[Subscribe] Erreur Supabase:', dbError.message);
+    }
+
+    res.json({ url: session.url });
+  } catch (e) {
+    console.error('[Subscribe] Erreur:', e.message);
+    res.status(500).json({ error: e.message });
+  }
+});
+
 // ── Health check ──────────────────────────────────────────────────────────────
 app.get('/', (req, res) => {
   res.json({
