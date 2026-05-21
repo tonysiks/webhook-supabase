@@ -230,13 +230,28 @@ app.post('/stripe-webhook', async (req, res) => {
       const subscriptionId = session.subscription;
       const email = session.metadata?.email;
 
-      const { error } = await supabase
+      const { data: updated, error } = await supabase
         .from('subscribers')
         .update({ status: 'active', stripe_subscription_id: subscriptionId })
-        .eq('stripe_customer_id', customerId);
+        .eq('stripe_customer_id', customerId)
+        .select();
 
       if (error) throw error;
-      console.log(`[StripeWebhook] checkout.session.completed — customer ${customerId} email ${email ?? 'inconnu'} → active`);
+
+      if (!updated || updated.length === 0) {
+        if (email) {
+          const { error: fallbackError } = await supabase
+            .from('subscribers')
+            .update({ status: 'active', stripe_subscription_id: subscriptionId, stripe_customer_id: customerId })
+            .eq('email', email);
+          if (fallbackError) throw fallbackError;
+          console.log(`[StripeWebhook] checkout.session.completed — fallback par email ${email} → active`);
+        } else {
+          console.warn(`[StripeWebhook] checkout.session.completed — aucune ligne mise à jour, email absent des metadata`);
+        }
+      } else {
+        console.log(`[StripeWebhook] checkout.session.completed — customer ${customerId} email ${email ?? 'inconnu'} → active`);
+      }
     }
 
     if (event.type === 'customer.subscription.deleted') {
