@@ -2,6 +2,7 @@ const { createClient } = require('@supabase/supabase-js');
 const { spawn } = require('child_process');
 const path = require('path');
 const fs = require('fs');
+const nodemailer = require('nodemailer');
 const SUPPLIERS = require('./suppliers');
 
 const supabase = createClient(
@@ -187,6 +188,51 @@ async function fetchRate(base, fallback) {
   }
 }
 
+// ── Envoi du rapport email ────────────────────────────────────────────────────
+async function sendReport(results) {
+  const failures = results.filter(r => !r.ok);
+  const subject = failures.length === 0
+    ? '✅ Cron OK'
+    : `⚠️ Cron — ${failures.length} échec(s)`;
+
+  const supplierLines = results.map(r =>
+    r.ok
+      ? `✅ ${r.name} : ${r.count} produit(s) inséré(s)/mis à jour`
+      : `❌ ${r.name} : ${r.error ? r.error : '0 produits'}`
+  );
+
+  const failureLines = failures.length > 0
+    ? ['', '── Fournisseurs en échec ──', ...failures.map(r => `• ${r.name}${r.error ? ` — ${r.error}` : ' — 0 produits'}`)]
+    : [];
+
+  const body = [
+    `Rapport du ${new Date().toISOString()}`,
+    '',
+    '── Résultats par fournisseur ──',
+    ...supplierLines,
+    ...failureLines,
+  ].join('\n');
+
+  const transporter = nodemailer.createTransport({
+    host: 'ssl0.ovh.net',
+    port: 465,
+    secure: true,
+    auth: {
+      user: 'contact@the-good.one',
+      pass: process.env.SMTP_PASSWORD,
+    },
+  });
+
+  await transporter.sendMail({
+    from: 'contact@the-good.one',
+    to: 'contact@the-good.one',
+    subject,
+    text: body,
+  });
+
+  console.log(`\n📧 Email envoyé : ${subject}`);
+}
+
 // ── Pipeline principal ────────────────────────────────────────────────────────
 const LOCK_FILE = '/tmp/cron.lock';
 
@@ -205,6 +251,8 @@ async function main() {
       fetchRate('GBP', 1.17),
     ]);
     const rates = { USD: usdToEur, GBP: gbpToEur, EUR: 1 };
+
+    const results = [];
 
     for (const [key, supplier] of Object.entries(SUPPLIERS)) {
       if (!supplier.taskId) {
@@ -234,8 +282,10 @@ async function main() {
 
         await upsertProducts(products);
         console.log(`  ✅ ${products.length} produits importés avec tags`);
+        results.push({ name: supplier.name, count: products.length, ok: products.length > 0 });
       } catch (e) {
         console.error(`  ❌ Erreur: ${e.message}`);
+        results.push({ name: supplier.name, count: 0, ok: false, error: e.message });
       }
     }
 
@@ -246,6 +296,12 @@ async function main() {
     await runGenerateTags();
 
     console.log('\n✅ Pipeline terminé.');
+
+    try {
+      await sendReport(results);
+    } catch (e) {
+      console.error(`  ⚠️  Envoi email échoué: ${e.message}`);
+    }
   } finally {
     if (fs.existsSync(LOCK_FILE)) fs.unlinkSync(LOCK_FILE);
   }
