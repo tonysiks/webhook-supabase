@@ -795,6 +795,20 @@ module.exports = {
     }),
   },
 
+  theneweravintage: {
+    name: 'TheNewEraVintage',
+    taskId: 'tonysiks~the-new-era-vintage',
+    currency: 'EUR',
+    mapProduct: (p) => ({
+      url:        p.source?.canonicalUrl || null,
+      title:      p.title || null,
+      price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
+      image_url:  p.medias?.[0]?.url || null,
+      stockStatus: p.variants?.[0]?.stockStatus || null,
+      fournisseur: 'TheNewEraVintage',
+    }),
+  },
+
 };
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
