@@ -1,6 +1,7 @@
 const express = require('express');
 const { createClient } = require('@supabase/supabase-js');
 const Stripe = require('stripe');
+const nodemailer = require('nodemailer');
 const SUPPLIERS = require('./suppliers');
 
 const app = express();
@@ -313,6 +314,50 @@ app.get('/subscriber/:email', async (req, res) => {
   }
 
   res.json(data);
+});
+
+// ── Notification email nouvelle note fournisseur ─────────────────────────────
+app.options('/send-rating-email', (req, res) => {
+  res.set('Access-Control-Allow-Origin', '*');
+  res.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.set('Access-Control-Allow-Headers', 'Content-Type');
+  res.sendStatus(204);
+});
+
+app.post('/send-rating-email', async (req, res) => {
+  res.set('Access-Control-Allow-Origin', '*');
+  const { fournisseur, note, commentaire, userEmail } = req.body;
+
+  if (!fournisseur || !note) {
+    return res.status(400).json({ error: 'fournisseur et note sont requis' });
+  }
+
+  const transporter = nodemailer.createTransport({
+    host: 'ssl0.ovh.net',
+    port: 465,
+    secure: true,
+    auth: { user: 'contact@the-good.one', pass: process.env.SMTP_PASSWORD },
+  });
+
+  const body = [
+    `Fournisseur : ${fournisseur}`,
+    `Note : ${note}/5`,
+    `Commentaire : ${commentaire || '(aucun)'}`,
+    `Email du votant : ${userEmail || '(inconnu)'}`,
+  ].join('\n');
+
+  try {
+    await transporter.sendMail({
+      from: 'contact@the-good.one',
+      to: 'contact@the-good.one',
+      subject: '⭐ Nouvelle note fournisseur',
+      text: body,
+    });
+    res.json({ ok: true });
+  } catch (e) {
+    console.error('[send-rating-email] Erreur SMTP:', e.message);
+    res.status(500).json({ error: e.message });
+  }
 });
 
 // ── Health check ──────────────────────────────────────────────────────────────
