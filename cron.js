@@ -2,7 +2,7 @@ const { createClient } = require('@supabase/supabase-js');
 const { spawn } = require('child_process');
 const path = require('path');
 const fs = require('fs');
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 const SUPPLIERS = require('./suppliers');
 
 const supabase = createClient(
@@ -213,17 +213,8 @@ async function sendReport(results) {
     ...failureLines,
   ].join('\n');
 
-  const transporter = nodemailer.createTransport({
-    host: 'ssl0.ovh.net',
-    port: 465,
-    secure: true,
-    auth: {
-      user: 'contact@the-good.one',
-      pass: process.env.SMTP_PASSWORD,
-    },
-  });
-
-  await transporter.sendMail({
+  const resend = new Resend(process.env.RESEND_API_KEY);
+  await resend.emails.send({
     from: 'contact@the-good.one',
     to: 'contact@the-good.one',
     subject,

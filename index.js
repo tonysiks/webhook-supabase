@@ -1,7 +1,7 @@
 const express = require('express');
 const { createClient } = require('@supabase/supabase-js');
 const Stripe = require('stripe');
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 const SUPPLIERS = require('./suppliers');
 
 const app = express();
@@ -332,13 +332,6 @@ app.post('/send-rating-email', async (req, res) => {
     return res.status(400).json({ error: 'fournisseur et note sont requis' });
   }
 
-  const transporter = nodemailer.createTransport({
-    host: 'ssl0.ovh.net',
-    port: 465,
-    secure: true,
-    auth: { user: 'contact@the-good.one', pass: process.env.SMTP_PASSWORD },
-  });
-
   const body = [
     `Fournisseur : ${fournisseur}`,
     `Note : ${note}/5`,
@@ -347,7 +340,8 @@ app.post('/send-rating-email', async (req, res) => {
   ].join('\n');
 
   try {
-    await transporter.sendMail({
+    const resend = new Resend(process.env.RESEND_API_KEY);
+    await resend.emails.send({
       from: 'contact@the-good.one',
       to: 'contact@the-good.one',
       subject: '⭐ Nouvelle note fournisseur',
@@ -355,7 +349,7 @@ app.post('/send-rating-email', async (req, res) => {
     });
     res.json({ ok: true });
   } catch (e) {
-    console.error('[send-rating-email] Erreur SMTP:', e.message);
+    console.error('[send-rating-email] Erreur Resend:', e.message);
     res.status(500).json({ error: e.message });
   }
 });
