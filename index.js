@@ -197,7 +197,7 @@ app.post('/subscribe', async (req, res) => {
 
   try {
     // Récupérer le subscriber existant en Supabase
-    const { data: existing } = await supabase
+    const { data: existing } = await supabaseAdmin
       .from('subscribers')
       .select('stripe_customer_id, status')
       .eq('email', email)
@@ -224,7 +224,7 @@ app.post('/subscribe', async (req, res) => {
     });
 
     // Upsert le subscriber en Supabase
-    const { error: dbError } = await supabase
+    const { error: dbError } = await supabaseAdmin
       .from('subscribers')
       .upsert(
         { email, stripe_customer_id: customerId, plan, status: 'inactive' },
@@ -296,7 +296,7 @@ app.post('/stripe-webhook', async (req, res) => {
       const subscriptionId = session.subscription;
       const email = session.metadata?.email;
 
-      const { data: updated, error } = await supabase
+      const { data: updated, error } = await supabaseAdmin
         .from('subscribers')
         .update({ status: 'active', stripe_subscription_id: subscriptionId })
         .eq('stripe_customer_id', customerId)
@@ -306,7 +306,7 @@ app.post('/stripe-webhook', async (req, res) => {
 
       if (!updated || updated.length === 0) {
         if (email) {
-          const { error: fallbackError } = await supabase
+          const { error: fallbackError } = await supabaseAdmin
             .from('subscribers')
             .update({ status: 'active', stripe_subscription_id: subscriptionId, stripe_customer_id: customerId })
             .eq('email', email);
@@ -372,7 +372,7 @@ app.post('/stripe-webhook', async (req, res) => {
       const subscription = event.data.object;
       const customerId = subscription.customer;
 
-      const { error } = await supabase
+      const { error } = await supabaseAdmin
         .from('subscribers')
         .update({ status: 'canceled', stripe_subscription_id: null })
         .eq('stripe_customer_id', customerId);
@@ -388,7 +388,7 @@ app.post('/stripe-webhook', async (req, res) => {
 
       const newPlan = Object.entries(PLAN_PRICE_IDS).find(([, id]) => id === priceId)?.[0] ?? null;
 
-      const { error } = await supabase
+      const { error } = await supabaseAdmin
         .from('subscribers')
         .update({ ...(newPlan && { plan: newPlan }), status: 'active' })
         .eq('stripe_customer_id', customerId);
@@ -416,7 +416,7 @@ app.get('/subscriber/:email', async (req, res) => {
   res.set('Access-Control-Allow-Origin', '*');
   const { email } = req.params;
 
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from('subscribers')
     .select('email, plan, status, created_at, updated_at')
     .eq('email', email)
@@ -661,7 +661,7 @@ app.post('/create-portal-session', async (req, res) => {
 
   if (!email) return res.status(400).json({ error: 'email requis' });
 
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from('subscribers')
     .select('stripe_customer_id')
     .eq('email', email)
@@ -703,7 +703,7 @@ app.post('/get-invoices', async (req, res) => {
 
   if (!email) return res.status(400).json({ error: 'email requis' });
 
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from('subscribers')
     .select('stripe_customer_id, stripe_subscription_id')
     .eq('email', email)
