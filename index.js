@@ -647,6 +647,113 @@ app.post('/log-connection', async (req, res) => {
   })();
 });
 
+// ── Stripe : portail de gestion d'abonnement ─────────────────────────────────
+app.options('/create-portal-session', (req, res) => {
+  res.set('Access-Control-Allow-Origin', '*');
+  res.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.set('Access-Control-Allow-Headers', 'Content-Type');
+  res.sendStatus(204);
+});
+
+app.post('/create-portal-session', async (req, res) => {
+  res.set('Access-Control-Allow-Origin', '*');
+  const { email } = req.body;
+
+  if (!email) return res.status(400).json({ error: 'email requis' });
+
+  const { data, error } = await supabase
+    .from('subscribers')
+    .select('stripe_customer_id')
+    .eq('email', email)
+    .single();
+
+  if (error || !data?.stripe_customer_id) {
+    return res.status(404).json({ error: 'Abonné introuvable ou sans customer Stripe' });
+  }
+
+  if (!process.env.STRIPE_SECRET_KEY) {
+    return res.status(500).json({ error: 'Stripe non configuré' });
+  }
+
+  const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
+
+  try {
+    const session = await stripe.billingPortal.sessions.create({
+      customer: data.stripe_customer_id,
+      return_url: 'https://the-good.one/dashboard.html',
+    });
+    res.json({ url: session.url });
+  } catch (e) {
+    console.error('[create-portal-session] Erreur:', e.message);
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// ── Stripe : historique des factures ─────────────────────────────────────────
+app.options('/get-invoices', (req, res) => {
+  res.set('Access-Control-Allow-Origin', '*');
+  res.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.set('Access-Control-Allow-Headers', 'Content-Type');
+  res.sendStatus(204);
+});
+
+app.post('/get-invoices', async (req, res) => {
+  res.set('Access-Control-Allow-Origin', '*');
+  const { email } = req.body;
+
+  if (!email) return res.status(400).json({ error: 'email requis' });
+
+  const { data, error } = await supabase
+    .from('subscribers')
+    .select('stripe_customer_id, stripe_subscription_id')
+    .eq('email', email)
+    .single();
+
+  if (error || !data?.stripe_customer_id) {
+    return res.status(404).json({ error: 'Abonné introuvable ou sans customer Stripe' });
+  }
+
+  if (!process.env.STRIPE_SECRET_KEY) {
+    return res.status(500).json({ error: 'Stripe non configuré' });
+  }
+
+  const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
+
+  try {
+    const invoicesList = await stripe.invoices.list({
+      customer: data.stripe_customer_id,
+      limit: 10,
+    });
+
+    // Récupère current_period_end depuis la subscription Stripe
+    let currentPeriodEnd = null;
+    if (data.stripe_subscription_id) {
+      try {
+        const sub = await stripe.subscriptions.retrieve(data.stripe_subscription_id);
+        currentPeriodEnd = sub.current_period_end; // Unix timestamp
+      } catch (subErr) {
+        console.warn('[get-invoices] Impossible de récupérer la subscription:', subErr.message);
+      }
+    }
+
+    res.json({
+      invoices: invoicesList.data.map(inv => ({
+        id:       inv.id,
+        number:   inv.number,
+        date:     inv.created,       // Unix timestamp
+        amount:   inv.amount_paid,   // centimes
+        currency: inv.currency,
+        status:   inv.status,
+        pdf:      inv.invoice_pdf,
+      })),
+      currentPeriodEnd,
+    });
+  } catch (e) {
+    console.error('[get-invoices] Erreur:', e.message);
+    res.status(500).json({ error: e.message });
+  }
+});
+
 // ── Health check ──────────────────────────────────────────────────────────────
 app.get('/', (req, res) => {
   res.json({
