@@ -647,6 +647,80 @@ app.post('/log-connection', async (req, res) => {
   })();
 });
 
+// ── TEST — à supprimer avant mise en production ───────────────────────────────
+app.get('/test-emails', async (req, res) => {
+  const { email } = req.query;
+  if (!email) return res.status(400).json({ error: 'Paramètre ?email= requis' });
+
+  const resend = new Resend(process.env.RESEND_API_KEY);
+  const results = {};
+
+  // ── Email 1 : Bienvenue ────────────────────────────────────────────────────
+  try {
+    await resend.emails.send({
+      from: 'The Good One <contact@the-good.one>',
+      to: email,
+      subject: 'Bienvenue sur The Good One 👋',
+      html: emailShell(`
+        <div style="background:#111;border-top:3px solid #0070F3;padding:28px 28px 24px;margin-bottom:8px;">
+          <div style="font-family:'Arial Black',Arial,sans-serif;font-size:19px;font-weight:900;text-transform:uppercase;letter-spacing:1px;color:#ffffff;margin-bottom:18px;">Bienvenue sur The Good One 👋</div>
+          <p style="font-size:15px;color:#bbb;line-height:1.75;margin:0 0 12px 0;">
+            Bonjour <strong style="color:#fff;">${email}</strong>,
+          </p>
+          <p style="font-size:15px;color:#bbb;line-height:1.75;margin:0;">
+            Votre compte est actif. Accédez dès maintenant au catalogue de plus de <strong style="color:#fff;">8 000 produits vintage wholesale</strong> issus des meilleurs fournisseurs européens.
+          </p>
+        </div>
+        ${emailBtn('Accéder au catalogue', 'https://the-good.one')}
+      `),
+    });
+    results.welcome = 'ok';
+  } catch (e) {
+    results.welcome = `erreur: ${e.message}`;
+  }
+
+  // ── Email 2 : Confirmation abonnement ─────────────────────────────────────
+  const startDate = new Date().toLocaleDateString('fr-FR', {
+    year: 'numeric', month: 'long', day: 'numeric',
+  });
+
+  try {
+    await resend.emails.send({
+      from: 'The Good One <contact@the-good.one>',
+      to: email,
+      subject: 'Votre abonnement The Good One est confirmé ✅',
+      html: emailShell(`
+        <div style="background:#111;border-top:3px solid #0070F3;padding:28px 28px 24px;margin-bottom:8px;">
+          <div style="font-family:'Arial Black',Arial,sans-serif;font-size:19px;font-weight:900;text-transform:uppercase;letter-spacing:1px;color:#ffffff;margin-bottom:18px;">✅ Abonnement confirmé</div>
+          <p style="font-size:15px;color:#bbb;line-height:1.75;margin:0 0 20px 0;">
+            Merci pour votre abonnement. Votre accès est immédiatement actif.
+          </p>
+          <table style="width:100%;border-collapse:collapse;">
+            <tr>
+              <td style="padding:10px 14px;background:#0d0d0d;border-bottom:1px solid #1e1e1e;font-size:12px;color:#666;text-transform:uppercase;letter-spacing:1px;width:140px;">Formule</td>
+              <td style="padding:10px 14px;background:#0d0d0d;border-bottom:1px solid #1e1e1e;font-size:14px;color:#fff;font-weight:600;">Starter Mensuel</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 14px;background:#111;border-bottom:1px solid #1e1e1e;font-size:12px;color:#666;text-transform:uppercase;letter-spacing:1px;">Date de début</td>
+              <td style="padding:10px 14px;background:#111;border-bottom:1px solid #1e1e1e;font-size:14px;color:#fff;">${startDate}</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 14px;background:#0d0d0d;font-size:12px;color:#666;text-transform:uppercase;letter-spacing:1px;">Montant réglé</td>
+              <td style="padding:10px 14px;background:#0d0d0d;font-size:14px;color:#0070F3;font-weight:700;">19,90 €</td>
+            </tr>
+          </table>
+        </div>
+        ${emailBtn('Accéder au catalogue', 'https://the-good.one')}
+      `),
+    });
+    results.confirmation = 'ok';
+  } catch (e) {
+    results.confirmation = `erreur: ${e.message}`;
+  }
+
+  res.json({ to: email, results });
+});
+
 // ── Health check ──────────────────────────────────────────────────────────────
 app.get('/', (req, res) => {
   res.json({
