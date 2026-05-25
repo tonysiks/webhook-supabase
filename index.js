@@ -370,10 +370,14 @@ app.options('/log-connection', (req, res) => {
 
 app.post('/log-connection', async (req, res) => {
   res.set('Access-Control-Allow-Origin', '*');
-  const { userEmail, ip, userAgent } = req.body;
+  const { userEmail, userAgent } = req.body;
 
-  if (!userEmail || !ip) {
-    return res.status(400).json({ error: 'userEmail et ip sont requis' });
+  // IP toujours lue côté serveur — l'éventuelle valeur envoyée par le front est ignorée
+  const rawIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
+  const ip = rawIp.split(',')[0].trim(); // x-forwarded-for peut contenir plusieurs IPs
+
+  if (!userEmail) {
+    return res.status(400).json({ error: 'userEmail est requis' });
   }
 
   // Répondre immédiatement — traitement en arrière-plan
