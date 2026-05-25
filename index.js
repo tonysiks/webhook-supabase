@@ -135,6 +135,38 @@ const PLAN_PRICE_IDS = {
   business:        process.env.STRIPE_PRICE_BUSINESS,
 };
 
+const PLAN_LABELS = {
+  starter_mensuel: 'Starter Mensuel',
+  starter_annuel:  'Starter Annuel',
+  business:        'Business',
+};
+
+// ── Template HTML partagé (fond noir, logo TGO) ───────────────────────────────
+function emailShell(bodyContent) {
+  return `<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#0a0a0a;font-family:Arial,sans-serif;">
+  <div style="max-width:580px;margin:0 auto;background:#0a0a0a;padding:40px 32px;">
+    <div style="text-align:center;margin-bottom:36px;">
+      <span style="font-family:'Arial Black',Arial,sans-serif;font-size:22px;font-weight:900;text-transform:uppercase;letter-spacing:3px;color:#ffffff;">THE GOOD <span style="color:#0070F3;">ONE</span></span>
+    </div>
+    ${bodyContent}
+    <div style="margin-top:40px;padding-top:20px;border-top:1px solid #161616;text-align:center;">
+      <a href="mailto:contact@the-good.one" style="font-size:13px;color:#0070F3;text-decoration:none;font-weight:600;">contact@the-good.one</a>
+      <div style="margin-top:10px;font-size:11px;color:#2a2a2a;letter-spacing:1px;text-transform:uppercase;">The Good One &middot; Le moteur du wholesale fripe</div>
+    </div>
+  </div>
+</body>
+</html>`;
+}
+
+function emailBtn(label, url) {
+  return `<div style="text-align:center;margin:28px 0;">
+    <a href="${url}" style="display:inline-block;background:#0070F3;color:#ffffff;text-decoration:none;padding:16px 44px;font-family:'Arial Black',Arial,sans-serif;font-size:13px;font-weight:900;letter-spacing:2px;text-transform:uppercase;">${label}</a>
+  </div>`;
+}
+
 app.options('/subscribe', (req, res) => {
   res.set('Access-Control-Allow-Origin', '*');
   res.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -203,6 +235,33 @@ app.post('/subscribe', async (req, res) => {
       console.error('[Subscribe] Erreur Supabase:', dbError.message);
     }
 
+    // ── Email de bienvenue — uniquement pour les nouveaux abonnés ─────────────
+    if (!existing?.stripe_customer_id) {
+      try {
+        const resend = new Resend(process.env.RESEND_API_KEY);
+        await resend.emails.send({
+          from: 'The Good One <contact@the-good.one>',
+          to: email,
+          subject: 'Bienvenue sur The Good One 👋',
+          html: emailShell(`
+            <div style="background:#111;border-top:3px solid #0070F3;padding:28px 28px 24px;margin-bottom:8px;">
+              <div style="font-family:'Arial Black',Arial,sans-serif;font-size:19px;font-weight:900;text-transform:uppercase;letter-spacing:1px;color:#ffffff;margin-bottom:18px;">Bienvenue sur The Good One 👋</div>
+              <p style="font-size:15px;color:#bbb;line-height:1.75;margin:0 0 12px 0;">
+                Bonjour <strong style="color:#fff;">${email}</strong>,
+              </p>
+              <p style="font-size:15px;color:#bbb;line-height:1.75;margin:0;">
+                Votre compte est actif. Accédez dès maintenant au catalogue de plus de <strong style="color:#fff;">8 000 produits vintage wholesale</strong> issus des meilleurs fournisseurs européens.
+              </p>
+            </div>
+            ${emailBtn('Accéder au catalogue', 'https://the-good.one')}
+          `),
+        });
+        console.log(`[Subscribe] ✉️ Email de bienvenue envoyé à ${email}`);
+      } catch (mailErr) {
+        console.error('[Subscribe] Erreur email bienvenue:', mailErr.message);
+      }
+    }
+
     res.json({ url: session.url });
   } catch (e) {
     console.error('[Subscribe] Erreur:', e.message);
@@ -258,6 +317,54 @@ app.post('/stripe-webhook', async (req, res) => {
         }
       } else {
         console.log(`[StripeWebhook] checkout.session.completed — customer ${customerId} email ${email ?? 'inconnu'} → active`);
+      }
+
+      // ── Email de confirmation d'abonnement ───────────────────────────────────
+      const recipientEmail = session.customer_details?.email || session.customer_email || email;
+      const planKey = updated?.[0]?.plan || session.metadata?.plan || null;
+      const planLabel = PLAN_LABELS[planKey] ?? planKey ?? 'Non précisé';
+      const amountFormatted = session.amount_total
+        ? `${(session.amount_total / 100).toFixed(2).replace('.', ',')} €`
+        : '—';
+      const startDate = new Date(session.created * 1000).toLocaleDateString('fr-FR', {
+        year: 'numeric', month: 'long', day: 'numeric',
+      });
+
+      if (recipientEmail) {
+        try {
+          const resend = new Resend(process.env.RESEND_API_KEY);
+          await resend.emails.send({
+            from: 'The Good One <contact@the-good.one>',
+            to: recipientEmail,
+            subject: 'Votre abonnement The Good One est confirmé ✅',
+            html: emailShell(`
+              <div style="background:#111;border-top:3px solid #0070F3;padding:28px 28px 24px;margin-bottom:8px;">
+                <div style="font-family:'Arial Black',Arial,sans-serif;font-size:19px;font-weight:900;text-transform:uppercase;letter-spacing:1px;color:#ffffff;margin-bottom:18px;">✅ Abonnement confirmé</div>
+                <p style="font-size:15px;color:#bbb;line-height:1.75;margin:0 0 20px 0;">
+                  Merci pour votre abonnement. Votre accès est immédiatement actif.
+                </p>
+                <table style="width:100%;border-collapse:collapse;">
+                  <tr>
+                    <td style="padding:10px 14px;background:#0d0d0d;border-bottom:1px solid #1e1e1e;font-size:12px;color:#666;text-transform:uppercase;letter-spacing:1px;width:140px;">Formule</td>
+                    <td style="padding:10px 14px;background:#0d0d0d;border-bottom:1px solid #1e1e1e;font-size:14px;color:#fff;font-weight:600;">${planLabel}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding:10px 14px;background:#111;border-bottom:1px solid #1e1e1e;font-size:12px;color:#666;text-transform:uppercase;letter-spacing:1px;">Date de début</td>
+                    <td style="padding:10px 14px;background:#111;border-bottom:1px solid #1e1e1e;font-size:14px;color:#fff;">${startDate}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding:10px 14px;background:#0d0d0d;font-size:12px;color:#666;text-transform:uppercase;letter-spacing:1px;">Montant réglé</td>
+                    <td style="padding:10px 14px;background:#0d0d0d;font-size:14px;color:#0070F3;font-weight:700;">${amountFormatted}</td>
+                  </tr>
+                </table>
+              </div>
+              ${emailBtn('Accéder au catalogue', 'https://the-good.one')}
+            `),
+          });
+          console.log(`[StripeWebhook] ✉️ Email de confirmation envoyé à ${recipientEmail}`);
+        } catch (mailErr) {
+          console.error('[StripeWebhook] Erreur email confirmation:', mailErr.message);
+        }
       }
     }
 
