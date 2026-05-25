@@ -503,6 +503,14 @@ app.post('/log-connection', async (req, res) => {
       </p>
     </div>
 
+    <!-- Avertissement partage de compte -->
+    <div style="background:#1a0f0f;border:1px solid #4a1a1a;border-left:4px solid #e53e3e;padding:18px 20px;margin-bottom:24px;">
+      <div style="font-size:13px;font-weight:700;color:#e53e3e;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">⚠️ Rappel : le partage de compte est strictement interdit.</div>
+      <p style="font-size:13px;color:#aaa;line-height:1.7;margin:0;">
+        Chaque abonnement est personnel et limité à <strong style="color:#fff;">2 appareils (1 PC + 1 téléphone)</strong>. Si nous détectons des connexions depuis plus de 2 appareils ou adresses IP différentes de manière répétée, votre compte sera <strong style="color:#fff;">suspendu définitivement sans remboursement</strong>, conformément à nos <a href="https://the-good.one/cgu.html" style="color:#0070F3;text-decoration:none;">CGU</a>.
+      </p>
+    </div>
+
     <!-- Bouton CTA -->
     <div style="text-align:center;margin-bottom:36px;">
       <a href="https://the-good.one/reset-password.html"
