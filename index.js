@@ -17,6 +17,12 @@ const supabase = createClient(
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF3emJlZ3lia2pmeW9iaWx2cGdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU5NjM3MjcsImV4cCI6MjA5MTUzOTcyN30.NENJdd9sZiyoh7vR4j-msWJ8u0uLFxnz4s-6qYmUkuM'
 );
 
+// Client admin (service_role) pour connection_logs — clé dans les env vars Render
+const supabaseAdmin = createClient(
+  'https://awzbegybkjfyobilvpgc.supabase.co',
+  process.env.SUPABASE_KEY || ''
+);
+
 const APIFY_TOKEN = process.env.APIFY_TOKEN;
 
 // ── Upsert par batch de 500 ───────────────────────────────────────────────────
@@ -352,6 +358,174 @@ app.post('/send-rating-email', async (req, res) => {
     console.error('[send-rating-email] Erreur Resend:', e.message);
     res.status(500).json({ error: e.message });
   }
+});
+
+// ── Log connexion + détection multi-IP ───────────────────────────────────────
+app.options('/log-connection', (req, res) => {
+  res.set('Access-Control-Allow-Origin', '*');
+  res.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.set('Access-Control-Allow-Headers', 'Content-Type');
+  res.sendStatus(204);
+});
+
+app.post('/log-connection', async (req, res) => {
+  res.set('Access-Control-Allow-Origin', '*');
+  const { userEmail, ip, userAgent } = req.body;
+
+  if (!userEmail || !ip) {
+    return res.status(400).json({ error: 'userEmail et ip sont requis' });
+  }
+
+  // Répondre immédiatement — traitement en arrière-plan
+  res.json({ ok: true });
+
+  (async () => {
+    try {
+      // 1. Stocker la connexion
+      const { error: insertError } = await supabaseAdmin
+        .from('connection_logs')
+        .insert({ user_email: userEmail, ip, user_agent: userAgent || null });
+
+      if (insertError) {
+        console.error('[log-connection] Insert error:', insertError.message);
+        return;
+      }
+
+      // 2. Récupérer toutes les connexions de cet email dans les 24 dernières heures
+      const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+      const { data: logs, error: selectError } = await supabaseAdmin
+        .from('connection_logs')
+        .select('ip, user_agent, created_at')
+        .eq('user_email', userEmail)
+        .gte('created_at', since)
+        .order('created_at', { ascending: false });
+
+      if (selectError) {
+        console.error('[log-connection] Select error:', selectError.message);
+        return;
+      }
+
+      // 3. Nombre d'IPs distinctes
+      const distinctIps = [...new Set(logs.map(l => l.ip))];
+      if (distinctIps.length < 2) return; // Pas d'alerte nécessaire
+
+      console.log(`[log-connection] ⚠️ ${distinctIps.length} IPs distinctes pour ${userEmail} — envoi des alertes`);
+
+      // 4. Construction du tableau détail pour l'email admin
+      const tableRows = logs.map(l => `
+        <tr>
+          <td style="padding:8px 12px;border-bottom:1px solid #222;font-family:'Courier New',monospace;font-size:13px;color:#e0e0e0;">${l.ip}</td>
+          <td style="padding:8px 12px;border-bottom:1px solid #222;font-size:12px;color:#aaa;max-width:300px;">${(l.user_agent || '—').substring(0, 90)}</td>
+          <td style="padding:8px 12px;border-bottom:1px solid #222;font-size:12px;color:#888;white-space:nowrap;">${new Date(l.created_at).toLocaleString('fr-FR', { timeZone: 'Europe/Paris' })}</td>
+        </tr>`).join('');
+
+      const resend = new Resend(process.env.RESEND_API_KEY);
+
+      // ── Email 1 — alerte admin ──────────────────────────────────────────────
+      await resend.emails.send({
+        from: 'contact@the-good.one',
+        to: 'contact@the-good.one',
+        subject: `⚠️ Connexions suspectes — ${userEmail}`,
+        html: `<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"></head>
+<body style="margin:0;padding:0;background:#0a0a0a;font-family:Arial,sans-serif;">
+  <div style="max-width:660px;margin:0 auto;background:#0a0a0a;padding:40px 32px;">
+
+    <div style="border-left:4px solid #e53e3e;padding:4px 0 4px 20px;margin-bottom:32px;">
+      <div style="font-family:'Arial Black',Arial,sans-serif;font-size:24px;font-weight:900;text-transform:uppercase;letter-spacing:2px;color:#ffffff;line-height:1.2;">⚠️ Connexions suspectes détectées</div>
+      <div style="font-size:12px;color:#666;letter-spacing:1px;text-transform:uppercase;margin-top:6px;">Alerte automatique · The Good One</div>
+    </div>
+
+    <table style="width:100%;border-collapse:collapse;margin-bottom:28px;background:#111;border:1px solid #1e1e1e;">
+      <tr>
+        <td style="padding:12px 16px;border-bottom:1px solid #1e1e1e;font-size:12px;color:#666;text-transform:uppercase;letter-spacing:1px;width:180px;">Email du compte</td>
+        <td style="padding:12px 16px;border-bottom:1px solid #1e1e1e;font-size:14px;color:#fff;font-weight:600;">${userEmail}</td>
+      </tr>
+      <tr>
+        <td style="padding:12px 16px;border-bottom:1px solid #1e1e1e;font-size:12px;color:#666;text-transform:uppercase;letter-spacing:1px;">Connexions en 24h</td>
+        <td style="padding:12px 16px;border-bottom:1px solid #1e1e1e;font-size:14px;color:#fff;font-weight:600;">${logs.length}</td>
+      </tr>
+      <tr>
+        <td style="padding:12px 16px;font-size:12px;color:#666;text-transform:uppercase;letter-spacing:1px;">IPs distinctes</td>
+        <td style="padding:12px 16px;font-size:16px;color:#e53e3e;font-weight:900;">${distinctIps.length}</td>
+      </tr>
+    </table>
+
+    <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#e53e3e;margin-bottom:10px;">Détail des connexions</div>
+    <table style="width:100%;border-collapse:collapse;background:#0d0d0d;border:1px solid #1e1e1e;">
+      <thead>
+        <tr style="background:#161616;">
+          <th style="padding:10px 12px;text-align:left;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#555;">IP</th>
+          <th style="padding:10px 12px;text-align:left;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#555;">User Agent</th>
+          <th style="padding:10px 12px;text-align:left;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#555;">Heure (Paris)</th>
+        </tr>
+      </thead>
+      <tbody>${tableRows}</tbody>
+    </table>
+
+    <div style="margin-top:40px;padding-top:20px;border-top:1px solid #161616;font-size:11px;color:#333;letter-spacing:1px;text-transform:uppercase;text-align:center;">
+      The Good One — Système de sécurité automatique
+    </div>
+  </div>
+</body>
+</html>`,
+      });
+
+      // ── Email 2 — alerte utilisateur ────────────────────────────────────────
+      await resend.emails.send({
+        from: 'contact@the-good.one',
+        to: userEmail,
+        subject: '⚠️ Activité suspecte détectée sur votre compte The Good One',
+        html: `<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"></head>
+<body style="margin:0;padding:0;background:#0a0a0a;font-family:Arial,sans-serif;">
+  <div style="max-width:580px;margin:0 auto;background:#0a0a0a;padding:40px 32px;">
+
+    <!-- Logo -->
+    <div style="text-align:center;margin-bottom:36px;">
+      <span style="font-family:'Arial Black',Arial,sans-serif;font-size:22px;font-weight:900;text-transform:uppercase;letter-spacing:3px;color:#ffffff;">THE GOOD <span style="color:#0070F3;">ONE</span></span>
+    </div>
+
+    <!-- Alerte -->
+    <div style="background:#111;border-top:3px solid #e53e3e;padding:28px 28px 24px;margin-bottom:28px;">
+      <div style="font-family:'Arial Black',Arial,sans-serif;font-size:19px;font-weight:900;text-transform:uppercase;letter-spacing:1px;color:#ffffff;margin-bottom:18px;">⚠️ Activité suspecte sur votre compte</div>
+      <p style="font-size:15px;color:#bbb;line-height:1.75;margin:0 0 14px 0;">
+        Nous avons détecté des connexions depuis <strong style="color:#fff;">plusieurs appareils ou adresses IP différentes</strong> sur votre compte.
+      </p>
+      <p style="font-size:15px;color:#bbb;line-height:1.75;margin:0;">
+        Si vous êtes à l'origine de ces connexions, vous pouvez ignorer ce message. Dans le cas contraire, <strong style="color:#ffffff;">changez immédiatement votre mot de passe</strong> en cliquant sur le bouton ci-dessous.
+      </p>
+    </div>
+
+    <!-- Bouton CTA -->
+    <div style="text-align:center;margin-bottom:36px;">
+      <a href="https://the-good.one/reset-password.html"
+         style="display:inline-block;background:#0070F3;color:#ffffff;text-decoration:none;padding:16px 44px;font-family:'Arial Black',Arial,sans-serif;font-size:13px;font-weight:900;letter-spacing:2px;text-transform:uppercase;">
+        Changer mon mot de passe
+      </a>
+    </div>
+
+    <!-- Footer -->
+    <div style="padding-top:24px;border-top:1px solid #161616;text-align:center;">
+      <div style="font-size:12px;color:#444;margin-bottom:8px;line-height:1.6;">
+        Si vous n'êtes pas à l'origine de cette alerte, contactez-nous immédiatement.
+      </div>
+      <a href="mailto:contact@the-good.one" style="font-size:13px;color:#0070F3;text-decoration:none;font-weight:600;">contact@the-good.one</a>
+      <div style="margin-top:20px;font-size:11px;color:#2a2a2a;letter-spacing:1px;text-transform:uppercase;">The Good One · Le moteur du wholesale fripe</div>
+    </div>
+
+  </div>
+</body>
+</html>`,
+      });
+
+      console.log(`[log-connection] ✅ Alertes envoyées pour ${userEmail} (${distinctIps.length} IPs, ${logs.length} connexions/24h)`);
+    } catch (e) {
+      console.error('[log-connection] Erreur:', e.message);
+    }
+  })();
 });
 
 // ── Health check ──────────────────────────────────────────────────────────────
