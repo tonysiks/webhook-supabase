@@ -492,10 +492,12 @@ app.post('/log-connection', async (req, res) => {
 
   (async () => {
     try {
-      // 1. Stocker la connexion
-      const { error: insertError } = await supabaseAdmin
+      // 1. Stocker la connexion et récupérer l'id de la ligne insérée
+      const { data: insertedRow, error: insertError } = await supabaseAdmin
         .from('connection_logs')
-        .insert({ user_email: userEmail, ip, user_agent: userAgent || null });
+        .insert({ user_email: userEmail, ip, user_agent: userAgent || null })
+        .select('id')
+        .single();
 
       if (insertError) {
         console.error('[log-connection] Insert error:', insertError.message);
@@ -519,6 +521,26 @@ app.post('/log-connection', async (req, res) => {
       // 3. Nombre d'IPs distinctes
       const distinctIps = [...new Set(logs.map(l => l.ip))];
       if (distinctIps.length < 2) return; // Pas d'alerte nécessaire
+
+      // 4. Cooldown 24h : vérifier si une alerte a déjà été envoyée pour cet email
+      const { data: recentAlert, error: cooldownError } = await supabaseAdmin
+        .from('connection_logs')
+        .select('id')
+        .eq('user_email', userEmail)
+        .eq('alert_sent', true)
+        .gte('created_at', since)
+        .limit(1)
+        .maybeSingle();
+
+      if (cooldownError) {
+        console.error('[log-connection] Cooldown check error:', cooldownError.message);
+        return;
+      }
+
+      if (recentAlert) {
+        console.log(`[log-connection] ⏸ Cooldown actif pour ${userEmail} — alerte déjà envoyée dans les 24h`);
+        return;
+      }
 
       console.log(`[log-connection] ⚠️ ${distinctIps.length} IPs distinctes pour ${userEmail} — envoi des alertes`);
 
@@ -639,6 +661,17 @@ app.post('/log-connection', async (req, res) => {
 </body>
 </html>`,
       });
+
+      // Marquer la ligne insérée comme alert_sent pour activer le cooldown
+      if (insertedRow?.id) {
+        const { error: updateError } = await supabaseAdmin
+          .from('connection_logs')
+          .update({ alert_sent: true })
+          .eq('id', insertedRow.id);
+        if (updateError) {
+          console.error('[log-connection] Erreur update alert_sent:', updateError.message);
+        }
+      }
 
       console.log(`[log-connection] ✅ Alertes envoyées pour ${userEmail} (${distinctIps.length} IPs, ${logs.length} connexions/24h)`);
     } catch (e) {
