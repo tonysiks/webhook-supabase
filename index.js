@@ -492,25 +492,23 @@ app.post('/log-connection', async (req, res) => {
 
   (async () => {
     try {
-      // 1. Stocker la connexion et récupérer l'id de la ligne insérée
-      const { data: insertedRow, error: insertError } = await supabaseAdmin
+      // 1. Stocker la connexion
+      const { error: insertError } = await supabaseAdmin
         .from('connection_logs')
-        .insert({ user_email: userEmail, ip, user_agent: userAgent || null })
-        .select('id')
-        .single();
+        .insert({ user_email: userEmail, ip, user_agent: userAgent || null });
 
       if (insertError) {
         console.error('[log-connection] Insert error:', insertError.message);
         return;
       }
 
-      // 2. Récupérer toutes les connexions de cet email dans les 24 dernières heures
-      const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+      // 2. Récupérer toutes les connexions de cet email dans les 30 derniers jours
+      const since30d = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
       const { data: logs, error: selectError } = await supabaseAdmin
         .from('connection_logs')
         .select('ip, user_agent, created_at')
         .eq('user_email', userEmail)
-        .gte('created_at', since)
+        .gte('created_at', since30d)
         .order('created_at', { ascending: false });
 
       if (selectError) {
@@ -518,33 +516,24 @@ app.post('/log-connection', async (req, res) => {
         return;
       }
 
-      // 3. Nombre d'IPs distinctes
+      // 3. Vérifier si l'IP actuelle est nouvelle (1 seule occurrence = ligne qu'on vient d'insérer)
       const distinctIps = [...new Set(logs.map(l => l.ip))];
-      if (distinctIps.length < 2) return; // Pas d'alerte nécessaire
+      const ipOccurrences = logs.filter(l => l.ip === ip).length;
+      const isNewIp = ipOccurrences === 1;
 
-      // 4. Cooldown 24h : vérifier si une alerte a déjà été envoyée pour cet email
-      const { data: recentAlert, error: cooldownError } = await supabaseAdmin
-        .from('connection_logs')
-        .select('id')
-        .eq('user_email', userEmail)
-        .eq('alert_sent', true)
-        .gte('created_at', since)
-        .limit(1)
-        .maybeSingle();
-
-      if (cooldownError) {
-        console.error('[log-connection] Cooldown check error:', cooldownError.message);
+      // 4. Alerte uniquement si nouvelle IP ET au moins 2 IPs distinctes sur 30j
+      if (!isNewIp) {
+        console.log(`[log-connection] IP déjà connue pour ${userEmail} — pas d'alerte`);
+        return;
+      }
+      if (distinctIps.length < 2) {
+        console.log(`[log-connection] Première IP connue pour ${userEmail} — pas d'alerte`);
         return;
       }
 
-      if (recentAlert) {
-        console.log(`[log-connection] ⏸ Cooldown actif pour ${userEmail} — alerte déjà envoyée dans les 24h`);
-        return;
-      }
+      console.log(`[log-connection] ⚠️ Nouvelle IP ${ip} pour ${userEmail} — ${distinctIps.length} IPs distinctes sur 30j — envoi des alertes`);
 
-      console.log(`[log-connection] ⚠️ ${distinctIps.length} IPs distinctes pour ${userEmail} — envoi des alertes`);
-
-      // 4. Construction du tableau détail pour l'email admin
+      // 5. Construction du tableau détail pour l'email admin
       const tableRows = logs.map(l => `
         <tr>
           <td style="padding:8px 12px;border-bottom:1px solid #222;font-family:'Courier New',monospace;font-size:13px;color:#e0e0e0;">${l.ip}</td>
@@ -662,18 +651,7 @@ app.post('/log-connection', async (req, res) => {
 </html>`,
       });
 
-      // Marquer la ligne insérée comme alert_sent pour activer le cooldown
-      if (insertedRow?.id) {
-        const { error: updateError } = await supabaseAdmin
-          .from('connection_logs')
-          .update({ alert_sent: true })
-          .eq('id', insertedRow.id);
-        if (updateError) {
-          console.error('[log-connection] Erreur update alert_sent:', updateError.message);
-        }
-      }
-
-      console.log(`[log-connection] ✅ Alertes envoyées pour ${userEmail} (${distinctIps.length} IPs, ${logs.length} connexions/24h)`);
+      console.log(`[log-connection] ✅ Alertes envoyées pour ${userEmail} (nouvelle IP: ${ip}, ${distinctIps.length} IPs distinctes sur 30j)`);
     } catch (e) {
       console.error('[log-connection] Erreur:', e.message);
     }
