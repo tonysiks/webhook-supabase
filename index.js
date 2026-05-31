@@ -754,6 +754,45 @@ app.post('/get-invoices', async (req, res) => {
   }
 });
 
+// ── [TEMP] Vérifier + confirmer email mathieublancard ────────────────────────
+app.get('/check-confirm-user', async (req, res) => {
+  const USER_ID = '8e8a7518-6900-4cda-8cbb-9283e860aa81';
+
+  // 1. Récupérer l'utilisateur
+  const { data: userData, error: getError } = await supabaseAdmin.auth.admin.getUserById(USER_ID);
+  if (getError) {
+    return res.status(500).json({ step: 'getUser', error: getError.message });
+  }
+
+  const user = userData?.user;
+  const emailConfirmedAt = user?.email_confirmed_at ?? null;
+  const confirmed = !!emailConfirmedAt;
+
+  console.log(`[check-confirm-user] email=${user?.email} confirmed=${confirmed} confirmed_at=${emailConfirmedAt}`);
+
+  // 2. Si pas confirmé → confirmer
+  if (!confirmed) {
+    const { data: updateData, error: updateError } = await supabaseAdmin.auth.admin.updateUserById(USER_ID, {
+      email_confirm: true,
+    });
+    if (updateError) {
+      return res.status(500).json({ step: 'updateUser', error: updateError.message });
+    }
+    return res.json({
+      was_confirmed: false,
+      action: 'confirmed_now',
+      email_confirmed_at: updateData?.user?.email_confirmed_at ?? null,
+    });
+  }
+
+  // 3. Déjà confirmé
+  return res.json({
+    was_confirmed: true,
+    action: 'nothing_to_do',
+    email_confirmed_at: emailConfirmedAt,
+  });
+});
+
 // ── Health check ──────────────────────────────────────────────────────────────
 app.get('/', (req, res) => {
   res.json({
