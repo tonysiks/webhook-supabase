@@ -754,35 +754,6 @@ app.post('/get-invoices', async (req, res) => {
   }
 });
 
-// ── [TEMP] Créer utilisateur Mathieu ─────────────────────────────────────────
-app.get('/create-test-user', async (req, res) => {
-  const results = {};
-
-  // 1. Créer l'utilisateur Auth
-  const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
-    email: 'mathieublancard@gmail.com',
-    password: 'mdp31400',
-    email_confirm: true,
-  });
-  results.auth = authError
-    ? { error: authError.message }
-    : { ok: true, user_id: authData?.user?.id };
-
-  // 2. Insérer dans subscribers
-  const { error: dbError } = await supabaseAdmin
-    .from('subscribers')
-    .upsert(
-      { email: 'mathieublancard@gmail.com', plan: 'starter_mensuel', status: 'active', stripe_customer_id: 'free_mathieu' },
-      { onConflict: 'email' }
-    );
-  results.subscriber = dbError
-    ? { error: dbError.message }
-    : { ok: true };
-
-  console.log('[create-test-user]', JSON.stringify(results));
-  res.json(results);
-});
-
 // ── Health check ──────────────────────────────────────────────────────────────
 app.get('/', (req, res) => {
   res.json({
