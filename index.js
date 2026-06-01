@@ -149,7 +149,7 @@ function emailShell(bodyContent) {
 <body style="margin:0;padding:0;background:#0a0a0a;font-family:Arial,sans-serif;">
   <div style="max-width:580px;margin:0 auto;background:#0a0a0a;padding:40px 32px;">
     <div style="text-align:center;margin-bottom:36px;">
-      <span style="font-family:'Arial Black',Arial,sans-serif;font-size:22px;font-weight:900;text-transform:uppercase;letter-spacing:3px;color:#ffffff;">THE GOOD <span style="color:#0070F3;">ONE</span></span>
+      <img src="https://the-good.one/assets/logo-noir.png" alt="The Good One" style="height:40px;width:auto;">
     </div>
     ${bodyContent}
     <div style="margin-top:40px;padding-top:20px;border-top:1px solid #161616;text-align:center;">
@@ -607,7 +607,7 @@ app.post('/log-connection', async (req, res) => {
 
     <!-- Logo -->
     <div style="text-align:center;margin-bottom:36px;">
-      <span style="font-family:'Arial Black',Arial,sans-serif;font-size:22px;font-weight:900;text-transform:uppercase;letter-spacing:3px;color:#ffffff;">THE GOOD <span style="color:#0070F3;">ONE</span></span>
+      <img src="https://the-good.one/assets/logo-noir.png" alt="The Good One" style="height:40px;width:auto;">
     </div>
 
     <!-- Alerte -->
