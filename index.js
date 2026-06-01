@@ -250,7 +250,7 @@ app.post('/subscribe', async (req, res) => {
                 Bonjour <strong style="color:#fff;">${email}</strong>,
               </p>
               <p style="font-size:15px;color:#bbb;line-height:1.75;margin:0;">
-                Votre compte est actif. Accédez dès maintenant au catalogue de plus de <strong style="color:#fff;">8 000 produits vintage wholesale</strong> issus des meilleurs fournisseurs européens.
+                Votre accès est activé. Découvrez dès maintenant les meilleures opportunités wholesale vintage d'Europe — plus de <strong style="color:#fff;">9 000 produits</strong>, environ <strong style="color:#fff;">60 fournisseurs</strong>, mis à jour quotidiennement et comparables en quelques clics !
               </p>
             </div>
             ${emailBtn('Accéder au catalogue', 'https://the-good.one')}
@@ -782,7 +782,7 @@ app.get('/test-email', async (req, res) => {
             Bonjour <strong style="color:#fff;">${email}</strong>,
           </p>
           <p style="font-size:15px;color:#bbb;line-height:1.75;margin:0;">
-            Votre compte est actif. Accédez dès maintenant au catalogue de plus de <strong style="color:#fff;">8 000 produits vintage wholesale</strong> issus des meilleurs fournisseurs européens.
+            Votre accès est activé. Découvrez dès maintenant les meilleures opportunités wholesale vintage d'Europe — plus de <strong style="color:#fff;">9 000 produits</strong>, environ <strong style="color:#fff;">60 fournisseurs</strong>, mis à jour quotidiennement et comparables en quelques clics !
           </p>
         </div>
         ${emailBtn('Accéder au catalogue', 'https://the-good.one')}
