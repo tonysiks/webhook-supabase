@@ -149,7 +149,7 @@ function emailShell(bodyContent) {
 <body style="margin:0;padding:0;background:#0a0a0a;font-family:Arial,sans-serif;">
   <div style="max-width:580px;margin:0 auto;background:#0a0a0a;padding:40px 32px;">
     <div style="text-align:center;margin-bottom:36px;">
-      <img src="https://the-good.one/assets/logo-noir.png" alt="The Good One" style="height:40px;width:auto;">
+      <img src="https://the-good.one/assets/logo-noir.png" alt="The Good One" style="height:100px;width:auto;">
     </div>
     ${bodyContent}
     <div style="margin-top:40px;padding-top:20px;border-top:1px solid #161616;text-align:center;">
