@@ -765,51 +765,6 @@ app.post('/get-invoices', async (req, res) => {
   }
 });
 
-// ── TEMP : test email de confirmation d'abonnement ───────────────────────────
-app.get('/test-email-confirmation', async (req, res) => {
-  const email = req.query.email;
-  if (!email) return res.status(400).json({ error: 'Paramètre ?email= manquant' });
-  try {
-    const resend = new Resend(process.env.RESEND_API_KEY);
-    const planLabel = 'Starter Mensuel';
-    const amountFormatted = '19,90 €';
-    const startDate = new Date().toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
-    await resend.emails.send({
-      from: 'The Good One <contact@the-good.one>',
-      to: email,
-      subject: 'Votre abonnement The Good One est confirmé ✅',
-      html: emailShell(`
-        <div style="background:#111;border-top:3px solid #0070F3;padding:28px 28px 24px;margin-bottom:8px;">
-          <div style="font-family:'Arial Black',Arial,sans-serif;font-size:19px;font-weight:900;text-transform:uppercase;letter-spacing:1px;color:#ffffff;margin-bottom:18px;">✅ Abonnement confirmé</div>
-          <p style="font-size:15px;color:#bbb;line-height:1.75;margin:0 0 20px 0;">
-            Merci pour votre abonnement. Votre accès est immédiatement actif.
-          </p>
-          <table style="width:100%;border-collapse:collapse;">
-            <tr>
-              <td style="padding:10px 14px;background:#0d0d0d;border-bottom:1px solid #1e1e1e;font-size:12px;color:#666;text-transform:uppercase;letter-spacing:1px;width:140px;">Formule</td>
-              <td style="padding:10px 14px;background:#0d0d0d;border-bottom:1px solid #1e1e1e;font-size:14px;color:#fff;font-weight:600;">${planLabel}</td>
-            </tr>
-            <tr>
-              <td style="padding:10px 14px;background:#111;border-bottom:1px solid #1e1e1e;font-size:12px;color:#666;text-transform:uppercase;letter-spacing:1px;">Date de début</td>
-              <td style="padding:10px 14px;background:#111;border-bottom:1px solid #1e1e1e;font-size:14px;color:#fff;">${startDate}</td>
-            </tr>
-            <tr>
-              <td style="padding:10px 14px;background:#0d0d0d;font-size:12px;color:#666;text-transform:uppercase;letter-spacing:1px;">Montant réglé</td>
-              <td style="padding:10px 14px;background:#0d0d0d;font-size:14px;color:#0070F3;font-weight:700;">${amountFormatted}</td>
-            </tr>
-          </table>
-        </div>
-        ${emailBtn('Accéder au catalogue', 'https://the-good.one')}
-      `),
-    });
-    console.log(`[test-email-confirmation] ✉️ Email de confirmation envoyé à ${email}`);
-    res.json({ ok: true, message: `Email de confirmation envoyé à ${email}` });
-  } catch (e) {
-    console.error('[test-email-confirmation] Erreur:', e.message);
-    res.status(500).json({ error: e.message });
-  }
-});
-
 // ── Health check ──────────────────────────────────────────────────────────────
 app.get('/', (req, res) => {
   res.json({
