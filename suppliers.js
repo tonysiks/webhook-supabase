@@ -851,6 +851,20 @@ module.exports = {
     }),
   },
 
+  vintagesupplyco: {
+    name: 'VintageSupplyCo',
+    taskId: 'tonysiks/vintage-supply-co',
+    currency: 'GBP',
+    mapProduct: (p) => ({
+      url:        p.source?.canonicalUrl || null,
+      title:      p.title || null,
+      price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
+      image_url:  p.medias?.[0]?.url || null,
+      stockStatus: p.variants?.[0]?.stockStatus || null,
+      fournisseur: 'VintageSupplyCo',
+    }),
+  },
+
   vintagesupplier: {
     name: 'VintageSupplier',
     taskId: 'tonysiks/vintage-supplier',
