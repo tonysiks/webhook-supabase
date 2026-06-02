@@ -130,15 +130,15 @@ app.post('/create-checkout-session', async (req, res) => {
 
 // ── Subscribe : crée customer Stripe + checkout session + sauvegarde Supabase ─
 const PLAN_PRICE_IDS = {
-  starter_mensuel: process.env.STRIPE_PRICE_STARTER_MENSUEL,
-  starter_annuel:  process.env.STRIPE_PRICE_STARTER_ANNUEL,
-  business:        process.env.STRIPE_PRICE_BUSINESS,
+  starter_mensuel: 'price_1TdyKH4PyLBB881egCHrszbr',
+  pro_mensuel:     'price_1TdyNS4PyLBB881e4yTqR0Dr',
+  pro_annuel:      'price_1TYoGQ4PyLBB881epvQCdR0L',
 };
 
 const PLAN_LABELS = {
   starter_mensuel: 'Starter Mensuel',
-  starter_annuel:  'Starter Annuel',
-  business:        'Business',
+  pro_mensuel:     'Pro Mensuel',
+  pro_annuel:      'Pro Annuel',
 };
 
 // ── Template HTML partagé (fond noir, logo TGO) ───────────────────────────────
