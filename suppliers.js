@@ -1,4 +1,4 @@
-// ─────────────────────────────────────────────────────────────────────────────
+﻿// ─────────────────────────────────────────────────────────────────────────────
 // SUPPLIERS CONFIG
 // Pour ajouter un fournisseur : copier un bloc et adapter.
 // taskId = ID de la task Apify (visible dans l'URL de la task)
@@ -853,7 +853,7 @@ module.exports = {
 
   vintagesupplyco: {
     name: 'VintageSupplyCo',
-    taskId: 'tonysiks/vintage-supply-co',
+    taskId: 'tonysiks~vintage-supply-co',
     currency: 'GBP',
     mapProduct: (p) => ({
       url:        p.source?.canonicalUrl || null,
@@ -867,7 +867,7 @@ module.exports = {
 
   vintagesupplier: {
     name: 'VintageSupplier',
-    taskId: 'tonysiks/vintage-supplier',
+    taskId: 'tonysiks~vintage-supplier',
     currency: 'EUR',
     mapProduct: (p) => ({
       url:        p.source?.canonicalUrl || null,
@@ -881,7 +881,7 @@ module.exports = {
 
   xvintagewholesales: {
     name: 'XVintageWholesales',
-    taskId: 'tonysiks/x-vintage-wholesales',
+    taskId: 'tonysiks~x-vintage-wholesales',
     currency: 'GBP',
     mapProduct: (p) => ({
       url:        p.source?.canonicalUrl || null,
@@ -895,7 +895,7 @@ module.exports = {
 
   vintageempirewholesale: {
     name: 'VintageEmpireWholesale',
-    taskId: 'tonysiks/vintage-empire-wholesale',
+    taskId: 'tonysiks~vintage-empire-wholesale',
     currency: 'GBP',
     mapProduct: (p) => ({
       url:        p.source?.canonicalUrl || null,
