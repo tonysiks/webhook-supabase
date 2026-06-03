@@ -224,6 +224,83 @@ async function sendReport(results) {
   console.log(`\n📧 Email envoyé : ${subject}`);
 }
 
+// ── Vérification et envoi des alertes stock ──────────────────────────────────
+async function checkPriceAlerts() {
+  console.log('\n🔔 Vérification des alertes stock...');
+  const resend = new Resend(process.env.RESEND_API_KEY);
+
+  const { data: alerts, error } = await supabase
+    .from('price_alerts')
+    .select('id, user_id, product_url, product_title, fournisseur');
+
+  if (error) { console.error('  Erreur récupération alertes:', error.message); return; }
+  if (!alerts || alerts.length === 0) { console.log('  Aucune alerte active.'); return; }
+
+  console.log(`  ${alerts.length} alerte(s) à vérifier`);
+
+  for (const alert of alerts) {
+    try {
+      // Vérifier si le produit est InStock
+      const { data: inStock } = await supabase
+        .from('produits')
+        .select('url')
+        .eq('url', alert.product_url)
+        .eq('stockStatus', 'InStock')
+        .limit(1);
+
+      if (!inStock || inStock.length === 0) continue;
+
+      // Récupérer l'email via auth admin
+      const { data: userData, error: userErr } = await supabase.auth.admin.getUserById(alert.user_id);
+      if (userErr || !userData?.user?.email) {
+        console.warn(`  ⚠️  Email introuvable pour user ${alert.user_id}`);
+        continue;
+      }
+      const email = userData.user.email;
+
+      // Envoyer l'email
+      await resend.emails.send({
+        from: 'The Good One <contact@the-good.one>',
+        to: email,
+        subject: '🔔 Un produit que vous suivez est de retour en stock !',
+        html: `<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#0a0a0a;font-family:Arial,sans-serif;">
+  <div style="max-width:580px;margin:0 auto;background:#0a0a0a;padding:40px 32px;">
+    <div style="text-align:center;margin-bottom:36px;">
+      <img src="https://the-good.one/assets/logo-blanc.png" alt="The Good One" style="height:100px;width:auto;">
+    </div>
+    <div style="background:#111;border-top:3px solid #0070F3;padding:28px 28px 24px;margin-bottom:8px;">
+      <div style="font-family:'Arial Black',Arial,sans-serif;font-size:19px;font-weight:900;text-transform:uppercase;letter-spacing:1px;color:#ffffff;margin-bottom:18px;">🔔 Retour en stock !</div>
+      <p style="font-size:15px;color:#bbb;line-height:1.75;margin:0 0 16px 0;">
+        Le produit que vous suivez est de nouveau disponible :
+      </p>
+      <p style="font-size:18px;color:#fff;font-weight:700;margin:0 0 6px 0;">${alert.product_title || 'Produit'}</p>
+      <p style="font-size:13px;color:#888;margin:0;">Fournisseur : ${alert.fournisseur || ''}</p>
+    </div>
+    <div style="text-align:center;margin:28px 0;">
+      <a href="${alert.product_url}" style="background:#0070F3;color:#ffffff;text-decoration:none;padding:16px 40px;font-family:'Arial Black',Arial,sans-serif;font-size:14px;font-weight:900;letter-spacing:2px;text-transform:uppercase;display:inline-block;">VOIR LE PRODUIT</a>
+    </div>
+    <div style="margin-top:40px;padding-top:20px;border-top:1px solid #161616;text-align:center;">
+      <a href="mailto:contact@the-good.one" style="font-size:13px;color:#0070F3;text-decoration:none;font-weight:600;">contact@the-good.one</a>
+      <div style="margin-top:10px;font-size:11px;color:#2a2a2a;letter-spacing:1px;text-transform:uppercase;">The Good One · Le moteur du wholesale fripe</div>
+    </div>
+  </div>
+</body>
+</html>`,
+      });
+
+      // Supprimer l'alerte après envoi
+      await supabase.from('price_alerts').delete().eq('id', alert.id);
+
+      console.log(`  ✅ Alerte envoyée pour ${alert.product_title} → ${email}`);
+    } catch (e) {
+      console.error(`  ❌ Erreur alerte ${alert.id}: ${e.message}`);
+    }
+  }
+}
+
 // ── Pipeline principal ────────────────────────────────────────────────────────
 const LOCK_FILE = '/tmp/cron.lock';
 
@@ -285,6 +362,13 @@ async function main() {
 
     // Régénérer tous les tags via le script Python (logique multilingue complète)
     await runGenerateTags();
+
+    // Vérifier les alertes stock et envoyer les notifications
+    try {
+      await checkPriceAlerts();
+    } catch (e) {
+      console.error(`  ⚠️  checkPriceAlerts échoué: ${e.message}`);
+    }
 
     console.log('\n✅ Pipeline terminé.');
 
