@@ -4,6 +4,7 @@ print("Starting imports...", flush=True)
 
 import requests
 print("imported requests", flush=True)
+import anthropic
 
 SUPABASE_URL = "https://awzbegybkjfyobilvpgc.supabase.co"
 SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF3emJlZ3lia2pmeW9iaWx2cGdjIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NTk2MzcyNywiZXhwIjoyMDkxNTM5NzI3fQ.5KuxLYIcZIk9y7wChd2cLxV8lx5zBxUH_x6C5sfQ1SA"
@@ -385,6 +386,61 @@ def infer_categories(title):
 
     return (extra + cats) if (extra or cats) else ["accessoire"]
 
+VALID_CATS = {
+    "tshirt","sweat","pull","hoodie","chemise","veste","manteau","doudoune",
+    "pantalon","jean","jogging","short","robe","combinaison","ensemble",
+    "polo","polaire","chaussures","accessoire","box","mix"
+}
+
+CLAUDE_TO_CATEGORY = {
+    "tshirt": "T-shirt",      "sweat": "Sweat-shirt",  "pull": "Pull",
+    "hoodie": "Sweat-shirt",  "chemise": "Chemise",    "veste": "Veste",
+    "manteau": "Manteau",     "doudoune": "Manteau",   "pantalon": "Pantalon",
+    "jean": "Pantalon",       "jogging": "Pantalon",   "short": "Short",
+    "robe": "Robe",           "combinaison": "Combinaison", "ensemble": "Combinaison",
+    "polo": "Polo",           "polaire": "Veste",      "chaussures": "Chaussures",
+    "accessoire": "Accessoire", "box": "Mix",          "mix": "Mix",
+}
+
+def classify_with_claude(titles_batch):
+    """Envoie un batch de titres à Claude Haiku. Retourne {index: [categories]}."""
+    client = anthropic.Anthropic()
+    products_str = "\n".join(f"{i}|{title}" for i, title in enumerate(titles_batch))
+    prompt = (
+        "Tu es un expert en vêtements vintage wholesale. Pour chaque titre de produit, "
+        "donne les catégories appropriées parmi cette liste EXACTE uniquement : "
+        "tshirt, sweat, pull, hoodie, chemise, veste, manteau, doudoune, pantalon, jean, "
+        "jogging, short, robe, combinaison, ensemble, polo, polaire, chaussures, accessoire, box, mix.\n\n"
+        "Règles :\n"
+        "- Maximum 3 catégories par produit\n"
+        "- La première est la catégorie principale\n"
+        "- UNIQUEMENT des valeurs de la liste exacte\n"
+        "- Une ligne par produit, format : INDEX|cat1,cat2,cat3\n"
+        "- Rien d'autre dans ta réponse\n\n"
+        f"Produits :\n{products_str}"
+    )
+    message = client.messages.create(
+        model="claude-haiku-4-5-20251001",
+        max_tokens=1024,
+        messages=[{"role": "user", "content": prompt}]
+    )
+    result = {}
+    for line in message.content[0].text.strip().split("\n"):
+        line = line.strip()
+        if "|" not in line:
+            continue
+        parts = line.split("|", 1)
+        if len(parts) != 2:
+            continue
+        try:
+            idx = int(parts[0].strip())
+            cats = [c.strip() for c in parts[1].split(",") if c.strip() in VALID_CATS]
+            if cats:
+                result[idx] = cats[:3]
+        except ValueError:
+            continue
+    return result
+
 # Récupérer tous les produits (régénération complète des tags)
 FETCH_BATCH = 1000
 print("Récupération de tous les produits...")
@@ -415,17 +471,33 @@ BATCH_SIZE = 50
 total = 0
 errors = 0
 
+print("   Classification des catégories via Claude Haiku...")
 rows = []
-for p in all_products:
-    category = p.get('category') or None
-    rows.append({
-        "id": p['id'],
-        "tags": generate_tags(p['title']),
-        "category": infer_category(p['title']),
-        "categories": infer_categories(p['title']),
-    })
+for i in range(0, len(all_products), BATCH_SIZE):
+    batch = all_products[i:i + BATCH_SIZE]
+    titles = [p.get('title') or '' for p in batch]
+    try:
+        claude_result = classify_with_claude(titles)
+    except Exception as e:
+        print(f"   ⚠️ Claude API error (batch {i//BATCH_SIZE + 1}): {e} — fallback règles")
+        claude_result = {}
+    for j, p in enumerate(batch):
+        title = p.get('title') or ''
+        if j in claude_result:
+            cats = claude_result[j]
+            category = CLAUDE_TO_CATEGORY.get(cats[0], infer_category(title))
+        else:
+            cats = infer_categories(title)
+            category = infer_category(title)
+        rows.append({
+            "id": p['id'],
+            "tags": generate_tags(title),
+            "category": category,
+            "categories": cats,
+        })
+    print(f"   Batch {i//BATCH_SIZE + 1}/{(len(all_products) + BATCH_SIZE - 1)//BATCH_SIZE} — {len(rows)} produits classifiés")
 
-print(f"   Tags générés, mise à jour en cours...")
+print(f"   Mise à jour en cours...")
 
 for p in rows:
     resp = requests.patch(
