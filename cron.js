@@ -240,15 +240,18 @@ async function checkPriceAlerts() {
 
   for (const alert of alerts) {
     try {
-      // Vérifier si le produit est InStock
-      const { data: inStock } = await supabase
+      // Vérifier stockStatus strictement 'InStock' et données récentes (< 25h)
+      const { data: product } = await supabase
         .from('produits')
-        .select('url')
+        .select('url, stockStatus, scraped_at')
         .eq('url', alert.product_url)
-        .eq('stockStatus', 'InStock')
-        .limit(1);
+        .limit(1)
+        .single();
 
-      if (!inStock || inStock.length === 0) continue;
+      if (!product) continue;
+      if (product.stockStatus !== 'InStock') continue;
+      const ageHours = (Date.now() - new Date(product.scraped_at).getTime()) / 3_600_000;
+      if (ageHours > 25) continue;
 
       // Récupérer l'email via auth admin
       const { data: userData, error: userErr } = await supabase.auth.admin.getUserById(alert.user_id);

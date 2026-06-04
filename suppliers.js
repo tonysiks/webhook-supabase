@@ -17,7 +17,9 @@ module.exports = {
       image_url:  p.medias?.[0]?.url || null,
       category:   p.categories?.[0] || null,
       tags:       normalizeTags(p.tags),
-      stockStatus: p.variants?.[0]?.price?.stockStatus || null,
+      stockStatus: p.variants?.[0]?.price?.stockStatus ||
+                   p.variants?.[0]?.stockStatus ||
+                   (p.available !== undefined ? (p.available ? 'InStock' : 'OutOfStock') : null),
     }),
   },
 
@@ -60,7 +62,9 @@ module.exports = {
       image_url:  p.medias?.[0]?.url || null,
       category:   p.categories?.[0] || null,
       tags:       normalizeTags(p.tags),
-      stockStatus: p.variants?.[0]?.price?.stockStatus || null,
+      stockStatus: p.variants?.[0]?.price?.stockStatus ||
+                   p.variants?.[0]?.stockStatus ||
+                   (p.available !== undefined ? (p.available ? 'InStock' : 'OutOfStock') : null),
     }),
   },
 
@@ -75,7 +79,9 @@ module.exports = {
       image_url:  p.medias?.[0]?.url || null,
       category:   p.categories?.[0] || null,
       tags:       normalizeTags(p.tags),
-      stockStatus: p.variants?.[0]?.price?.stockStatus || null,
+      stockStatus: p.variants?.[0]?.price?.stockStatus ||
+                   p.variants?.[0]?.stockStatus ||
+                   (p.available !== undefined ? (p.available ? 'InStock' : 'OutOfStock') : null),
     }),
   },
 
@@ -90,7 +96,9 @@ module.exports = {
       image_url:  p.medias?.[0]?.url || null,
       category:   p.categories?.[0] || null,
       tags:       normalizeTags(p.tags),
-      stockStatus: p.variants?.[0]?.price?.stockStatus || null,
+      stockStatus: p.variants?.[0]?.price?.stockStatus ||
+                   p.variants?.[0]?.stockStatus ||
+                   (p.available !== undefined ? (p.available ? 'InStock' : 'OutOfStock') : null),
     }),
   },
 
@@ -105,7 +113,9 @@ module.exports = {
       image_url:  p.medias?.[0]?.url || null,
       category:   p.categories?.[0] || null,
       tags:       normalizeTags(p.tags),
-      stockStatus: p.variants?.[0]?.price?.stockStatus || null,
+      stockStatus: p.variants?.[0]?.price?.stockStatus ||
+                   p.variants?.[0]?.stockStatus ||
+                   (p.available !== undefined ? (p.available ? 'InStock' : 'OutOfStock') : null),
     }),
   },
 
@@ -137,7 +147,9 @@ module.exports = {
       category:   p.categories?.[0] || null,
       fournisseur: 'TAGZ',
       tags:       normalizeTags(p.tags),
-      stockStatus: p.variants?.[0]?.price?.stockStatus || null,
+      stockStatus: p.variants?.[0]?.price?.stockStatus ||
+                   p.variants?.[0]?.stockStatus ||
+                   (p.available !== undefined ? (p.available ? 'InStock' : 'OutOfStock') : null),
     }),
   },
 
@@ -152,7 +164,9 @@ module.exports = {
       image_url:  p.medias?.[0]?.url || null,
       category:   p.categories?.[0] || null,
       tags:       normalizeTags(p.tags),
-      stockStatus: p.variants?.[0]?.price?.stockStatus || null,
+      stockStatus: p.variants?.[0]?.price?.stockStatus ||
+                   p.variants?.[0]?.stockStatus ||
+                   (p.available !== undefined ? (p.available ? 'InStock' : 'OutOfStock') : null),
     }),
   },
 
@@ -167,7 +181,9 @@ module.exports = {
       image_url:  p.medias?.[0]?.url || null,
       category:   p.categories?.[0] || null,
       tags:       normalizeTags(p.tags),
-      stockStatus: p.variants?.[0]?.price?.stockStatus || null,
+      stockStatus: p.variants?.[0]?.price?.stockStatus ||
+                   p.variants?.[0]?.stockStatus ||
+                   (p.available !== undefined ? (p.available ? 'InStock' : 'OutOfStock') : null),
     }),
   },
 
@@ -182,7 +198,9 @@ module.exports = {
       image_url:  p.medias?.[0]?.url || null,
       category:   p.categories?.[0] || null,
       tags:       normalizeTags(p.tags),
-      stockStatus: p.variants?.[0]?.price?.stockStatus || null,
+      stockStatus: p.variants?.[0]?.price?.stockStatus ||
+                   p.variants?.[0]?.stockStatus ||
+                   (p.available !== undefined ? (p.available ? 'InStock' : 'OutOfStock') : null),
     }),
   },
 
@@ -197,7 +215,9 @@ module.exports = {
       image_url:  p.medias?.[0]?.url || null,
       category:   p.categories?.[0] || null,
       tags:       normalizeTags(p.tags),
-      stockStatus: p.variants?.[0]?.price?.stockStatus || null,
+      stockStatus: p.variants?.[0]?.price?.stockStatus ||
+                   p.variants?.[0]?.stockStatus ||
+                   (p.available !== undefined ? (p.available ? 'InStock' : 'OutOfStock') : null),
     }),
   },
 
@@ -212,7 +232,9 @@ module.exports = {
       image_url:  p.medias?.[0]?.url || null,
       category:   p.categories?.[0] || null,
       tags:       normalizeTags(p.tags),
-      stockStatus: p.variants?.[0]?.price?.stockStatus || null,
+      stockStatus: p.variants?.[0]?.price?.stockStatus ||
+                   p.variants?.[0]?.stockStatus ||
+                   (p.available !== undefined ? (p.available ? 'InStock' : 'OutOfStock') : null),
     }),
   },
 
@@ -227,7 +249,9 @@ module.exports = {
       image_url:  p.medias?.[0]?.url || null,
       category:   p.categories?.[0] || null,
       tags:       normalizeTags(p.tags),
-      stockStatus: p.variants?.[0]?.price?.stockStatus || null,
+      stockStatus: p.variants?.[0]?.price?.stockStatus ||
+                   p.variants?.[0]?.stockStatus ||
+                   (p.available !== undefined ? (p.available ? 'InStock' : 'OutOfStock') : null),
     }),
   },
 
@@ -242,7 +266,9 @@ module.exports = {
       image_url:  p.medias?.[0]?.url || null,
       category:   p.categories?.[0] || null,
       tags:       normalizeTags(p.tags),
-      stockStatus: p.variants?.[0]?.price?.stockStatus || null,
+      stockStatus: p.variants?.[0]?.price?.stockStatus ||
+                   p.variants?.[0]?.stockStatus ||
+                   (p.available !== undefined ? (p.available ? 'InStock' : 'OutOfStock') : null),
     }),
   },
 
@@ -257,7 +283,9 @@ module.exports = {
       image_url:  p.medias?.[0]?.url || null,
       category:   p.categories?.[0] || null,
       tags:       normalizeTags(p.tags),
-      stockStatus: p.variants?.[0]?.price?.stockStatus || null,
+      stockStatus: p.variants?.[0]?.price?.stockStatus ||
+                   p.variants?.[0]?.stockStatus ||
+                   (p.available !== undefined ? (p.available ? 'InStock' : 'OutOfStock') : null),
     }),
   },
 
@@ -272,7 +300,9 @@ module.exports = {
       image_url:  p.medias?.[0]?.url || null,
       category:   p.categories?.[0] || null,
       tags:       normalizeTags(p.tags),
-      stockStatus: p.variants?.[0]?.price?.stockStatus || null,
+      stockStatus: p.variants?.[0]?.price?.stockStatus ||
+                   p.variants?.[0]?.stockStatus ||
+                   (p.available !== undefined ? (p.available ? 'InStock' : 'OutOfStock') : null),
     }),
   },
 
@@ -287,7 +317,9 @@ module.exports = {
       image_url:  p.medias?.[0]?.url || null,
       category:   p.categories?.[0] || null,
       tags:       normalizeTags(p.tags),
-      stockStatus: p.variants?.[0]?.price?.stockStatus || null,
+      stockStatus: p.variants?.[0]?.price?.stockStatus ||
+                   p.variants?.[0]?.stockStatus ||
+                   (p.available !== undefined ? (p.available ? 'InStock' : 'OutOfStock') : null),
     }),
   },
 
@@ -302,7 +334,9 @@ module.exports = {
       image_url:  p.medias?.[0]?.url || null,
       category:   p.categories?.[0] || null,
       tags:       normalizeTags(p.tags),
-      stockStatus: p.variants?.[0]?.price?.stockStatus || null,
+      stockStatus: p.variants?.[0]?.price?.stockStatus ||
+                   p.variants?.[0]?.stockStatus ||
+                   (p.available !== undefined ? (p.available ? 'InStock' : 'OutOfStock') : null),
     }),
   },
 
@@ -317,7 +351,9 @@ module.exports = {
       image_url:  p.medias?.[0]?.url || null,
       category:   p.categories?.[0] || null,
       tags:       normalizeTags(p.tags),
-      stockStatus: p.variants?.[0]?.price?.stockStatus || null,
+      stockStatus: p.variants?.[0]?.price?.stockStatus ||
+                   p.variants?.[0]?.stockStatus ||
+                   (p.available !== undefined ? (p.available ? 'InStock' : 'OutOfStock') : null),
     }),
   },
 
@@ -332,7 +368,9 @@ module.exports = {
       image_url:  p.medias?.[0]?.url || null,
       category:   p.categories?.[0] || null,
       tags:       normalizeTags(p.tags),
-      stockStatus: p.variants?.[0]?.price?.stockStatus || null,
+      stockStatus: p.variants?.[0]?.price?.stockStatus ||
+                   p.variants?.[0]?.stockStatus ||
+                   (p.available !== undefined ? (p.available ? 'InStock' : 'OutOfStock') : null),
     }),
   },
 
@@ -347,7 +385,9 @@ module.exports = {
       image_url:  p.medias?.[0]?.url || null,
       category:   p.categories?.[0] || null,
       tags:       normalizeTags(p.tags),
-      stockStatus: p.variants?.[0]?.price?.stockStatus || null,
+      stockStatus: p.variants?.[0]?.price?.stockStatus ||
+                   p.variants?.[0]?.stockStatus ||
+                   (p.available !== undefined ? (p.available ? 'InStock' : 'OutOfStock') : null),
     }),
   },
 
@@ -362,7 +402,9 @@ module.exports = {
       image_url:  p.medias?.[0]?.url || null,
       category:   p.categories?.[0] || null,
       tags:       normalizeTags(p.tags),
-      stockStatus: p.variants?.[0]?.price?.stockStatus || null,
+      stockStatus: p.variants?.[0]?.price?.stockStatus ||
+                   p.variants?.[0]?.stockStatus ||
+                   (p.available !== undefined ? (p.available ? 'InStock' : 'OutOfStock') : null),
     }),
   },
 
@@ -392,7 +434,9 @@ module.exports = {
       image_url:  p.medias?.[0]?.url || null,
       category:   p.categories?.[0] || null,
       tags:       normalizeTags(p.tags),
-      stockStatus: p.variants?.[0]?.price?.stockStatus || null,
+      stockStatus: p.variants?.[0]?.price?.stockStatus ||
+                   p.variants?.[0]?.stockStatus ||
+                   (p.available !== undefined ? (p.available ? 'InStock' : 'OutOfStock') : null),
     }),
   },
 
@@ -407,7 +451,9 @@ module.exports = {
       image_url:  p.medias?.[0]?.url || null,
       category:   p.categories?.[0] || null,
       tags:       normalizeTags(p.tags),
-      stockStatus: p.variants?.[0]?.price?.stockStatus || null,
+      stockStatus: p.variants?.[0]?.price?.stockStatus ||
+                   p.variants?.[0]?.stockStatus ||
+                   (p.available !== undefined ? (p.available ? 'InStock' : 'OutOfStock') : null),
     }),
   },
 
@@ -422,7 +468,9 @@ module.exports = {
       image_url:  p.medias?.[0]?.url || null,
       category:   p.categories?.[0] || null,
       tags:       normalizeTags(p.tags),
-      stockStatus: p.variants?.[0]?.price?.stockStatus || null,
+      stockStatus: p.variants?.[0]?.price?.stockStatus ||
+                   p.variants?.[0]?.stockStatus ||
+                   (p.available !== undefined ? (p.available ? 'InStock' : 'OutOfStock') : null),
     }),
   },
 
@@ -437,7 +485,9 @@ module.exports = {
       image_url:  p.medias?.[0]?.url || null,
       category:   p.categories?.[0] || null,
       tags:       normalizeTags(p.tags),
-      stockStatus: p.variants?.[0]?.price?.stockStatus || null,
+      stockStatus: p.variants?.[0]?.price?.stockStatus ||
+                   p.variants?.[0]?.stockStatus ||
+                   (p.available !== undefined ? (p.available ? 'InStock' : 'OutOfStock') : null),
     }),
   },
 
@@ -452,7 +502,9 @@ module.exports = {
       image_url:  p.medias?.[0]?.url || null,
       category:   p.categories?.[0] || null,
       tags:       normalizeTags(p.tags),
-      stockStatus: p.variants?.[0]?.price?.stockStatus || null,
+      stockStatus: p.variants?.[0]?.price?.stockStatus ||
+                   p.variants?.[0]?.stockStatus ||
+                   (p.available !== undefined ? (p.available ? 'InStock' : 'OutOfStock') : null),
     }),
   },
 
@@ -467,7 +519,9 @@ module.exports = {
       image_url:  p.medias?.[0]?.url || null,
       category:   p.categories?.[0] || null,
       tags:       normalizeTags(p.tags),
-      stockStatus: p.variants?.[0]?.price?.stockStatus || null,
+      stockStatus: p.variants?.[0]?.price?.stockStatus ||
+                   p.variants?.[0]?.stockStatus ||
+                   (p.available !== undefined ? (p.available ? 'InStock' : 'OutOfStock') : null),
     }),
   },
 
@@ -482,7 +536,9 @@ module.exports = {
       image_url:  p.medias?.[0]?.url || null,
       category:   p.categories?.[0] || null,
       tags:       normalizeTags(p.tags),
-      stockStatus: p.variants?.[0]?.price?.stockStatus || null,
+      stockStatus: p.variants?.[0]?.price?.stockStatus ||
+                   p.variants?.[0]?.stockStatus ||
+                   (p.available !== undefined ? (p.available ? 'InStock' : 'OutOfStock') : null),
     }),
   },
 
@@ -497,7 +553,9 @@ module.exports = {
       image_url:  p.medias?.[0]?.url || null,
       category:   p.categories?.[0] || null,
       tags:       normalizeTags(p.tags),
-      stockStatus: p.variants?.[0]?.price?.stockStatus || null,
+      stockStatus: p.variants?.[0]?.price?.stockStatus ||
+                   p.variants?.[0]?.stockStatus ||
+                   (p.available !== undefined ? (p.available ? 'InStock' : 'OutOfStock') : null),
     }),
   },
 
@@ -511,7 +569,9 @@ module.exports = {
       price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
       fournisseur: 'BoomVintageWholesale',
-      stockStatus: p.variants?.[0]?.price?.stockStatus || null,
+      stockStatus: p.variants?.[0]?.price?.stockStatus ||
+                   p.variants?.[0]?.stockStatus ||
+                   (p.available !== undefined ? (p.available ? 'InStock' : 'OutOfStock') : null),
     }),
   },
 
@@ -525,7 +585,9 @@ module.exports = {
       price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
       fournisseur: 'PremiumVintageWholesale',
-      stockStatus: p.variants?.[0]?.price?.stockStatus || null,
+      stockStatus: p.variants?.[0]?.price?.stockStatus ||
+                   p.variants?.[0]?.stockStatus ||
+                   (p.available !== undefined ? (p.available ? 'InStock' : 'OutOfStock') : null),
     }),
   },
 
@@ -553,7 +615,9 @@ module.exports = {
       price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
       fournisseur: 'TheHubVintageWholesale',
-      stockStatus: p.variants?.[0]?.price?.stockStatus || null,
+      stockStatus: p.variants?.[0]?.price?.stockStatus ||
+                   p.variants?.[0]?.stockStatus ||
+                   (p.available !== undefined ? (p.available ? 'InStock' : 'OutOfStock') : null),
     }),
   },
 
@@ -567,7 +631,9 @@ module.exports = {
       price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
       fournisseur: 'SPVintageWholesale',
-      stockStatus: p.variants?.[0]?.price?.stockStatus || null,
+      stockStatus: p.variants?.[0]?.price?.stockStatus ||
+                   p.variants?.[0]?.stockStatus ||
+                   (p.available !== undefined ? (p.available ? 'InStock' : 'OutOfStock') : null),
     }),
   },
 
@@ -581,7 +647,9 @@ module.exports = {
       price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
       fournisseur: 'VintageWholesaleStore',
-      stockStatus: p.variants?.[0]?.price?.stockStatus || null,
+      stockStatus: p.variants?.[0]?.price?.stockStatus ||
+                   p.variants?.[0]?.stockStatus ||
+                   (p.available !== undefined ? (p.available ? 'InStock' : 'OutOfStock') : null),
     }),
   },
 
@@ -595,7 +663,9 @@ module.exports = {
       price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
       fournisseur: 'VintageBulk',
-      stockStatus: p.variants?.[0]?.price?.stockStatus || null,
+      stockStatus: p.variants?.[0]?.price?.stockStatus ||
+                   p.variants?.[0]?.stockStatus ||
+                   (p.available !== undefined ? (p.available ? 'InStock' : 'OutOfStock') : null),
     }),
   },
 
@@ -609,7 +679,9 @@ module.exports = {
       price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
       fournisseur: 'GradedWholesale',
-      stockStatus: p.variants?.[0]?.price?.stockStatus || null,
+      stockStatus: p.variants?.[0]?.price?.stockStatus ||
+                   p.variants?.[0]?.stockStatus ||
+                   (p.available !== undefined ? (p.available ? 'InStock' : 'OutOfStock') : null),
     }),
   },
 
@@ -637,7 +709,9 @@ module.exports = {
       price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
       fournisseur: 'VintageDepot',
-      stockStatus: p.variants?.[0]?.price?.stockStatus || null,
+      stockStatus: p.variants?.[0]?.price?.stockStatus ||
+                   p.variants?.[0]?.stockStatus ||
+                   (p.available !== undefined ? (p.available ? 'InStock' : 'OutOfStock') : null),
     }),
   },
 
@@ -651,7 +725,9 @@ module.exports = {
       price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
       fournisseur: 'VintageWholesaleUK',
-      stockStatus: p.variants?.[0]?.price?.stockStatus || null,
+      stockStatus: p.variants?.[0]?.price?.stockStatus ||
+                   p.variants?.[0]?.stockStatus ||
+                   (p.available !== undefined ? (p.available ? 'InStock' : 'OutOfStock') : null),
     }),
   },
 
@@ -665,7 +741,9 @@ module.exports = {
       price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
       fournisseur: 'DublinWholesaleVintage',
-      stockStatus: p.variants?.[0]?.price?.stockStatus || null,
+      stockStatus: p.variants?.[0]?.price?.stockStatus ||
+                   p.variants?.[0]?.stockStatus ||
+                   (p.available !== undefined ? (p.available ? 'InStock' : 'OutOfStock') : null),
     }),
   },
 
@@ -679,7 +757,9 @@ module.exports = {
       price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
       fournisseur: 'VentorBox',
-      stockStatus: p.variants?.[0]?.price?.stockStatus || null,
+      stockStatus: p.variants?.[0]?.price?.stockStatus ||
+                   p.variants?.[0]?.stockStatus ||
+                   (p.available !== undefined ? (p.available ? 'InStock' : 'OutOfStock') : null),
     }),
   },
 
@@ -693,7 +773,9 @@ module.exports = {
       price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
       fournisseur: 'RepeatVintageWholesale',
-      stockStatus: p.variants?.[0]?.price?.stockStatus || null,
+      stockStatus: p.variants?.[0]?.price?.stockStatus ||
+                   p.variants?.[0]?.stockStatus ||
+                   (p.available !== undefined ? (p.available ? 'InStock' : 'OutOfStock') : null),
     }),
   },
 
@@ -707,7 +789,9 @@ module.exports = {
       price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
       fournisseur: 'ToBeWornAgain',
-      stockStatus: p.variants?.[0]?.price?.stockStatus || null,
+      stockStatus: p.variants?.[0]?.price?.stockStatus ||
+                   p.variants?.[0]?.stockStatus ||
+                   (p.available !== undefined ? (p.available ? 'InStock' : 'OutOfStock') : null),
     }),
   },
 
@@ -721,7 +805,9 @@ module.exports = {
       price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
       fournisseur: 'PickVintageWholesale',
-      stockStatus: p.variants?.[0]?.price?.stockStatus || null,
+      stockStatus: p.variants?.[0]?.price?.stockStatus ||
+                   p.variants?.[0]?.stockStatus ||
+                   (p.available !== undefined ? (p.available ? 'InStock' : 'OutOfStock') : null),
     }),
   },
 
@@ -735,7 +821,9 @@ module.exports = {
       price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
       fournisseur: 'TorgomVintage',
-      stockStatus: p.variants?.[0]?.price?.stockStatus || null,
+      stockStatus: p.variants?.[0]?.price?.stockStatus ||
+                   p.variants?.[0]?.stockStatus ||
+                   (p.available !== undefined ? (p.available ? 'InStock' : 'OutOfStock') : null),
     }),
   },
 
@@ -749,7 +837,9 @@ module.exports = {
       price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
       fournisseur: 'ThriftBundlez',
-      stockStatus: p.variants?.[0]?.price?.stockStatus || null,
+      stockStatus: p.variants?.[0]?.price?.stockStatus ||
+                   p.variants?.[0]?.stockStatus ||
+                   (p.available !== undefined ? (p.available ? 'InStock' : 'OutOfStock') : null),
     }),
   },
 
@@ -763,7 +853,9 @@ module.exports = {
       price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
       fournisseur: 'GGVintageWholesale',
-      stockStatus: p.variants?.[0]?.price?.stockStatus || null,
+      stockStatus: p.variants?.[0]?.price?.stockStatus ||
+                   p.variants?.[0]?.stockStatus ||
+                   (p.available !== undefined ? (p.available ? 'InStock' : 'OutOfStock') : null),
     }),
   },
 
