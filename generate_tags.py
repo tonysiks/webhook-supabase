@@ -403,6 +403,20 @@ CLAUDE_TO_CATEGORY = {
     "accessoire": "Accessoire", "box": "Mix",          "mix": "Mix",
 }
 
+CATEGORY_SYNONYMS = {
+    'combinaison': ['salopette', 'dungarees', 'overalls', 'combinaison'],
+    'veste':       ['veste', 'jacket', 'blouson', 'manteau'],
+    'jogging':     ['jogging', 'tracksuit', 'survetement', 'jogger'],
+    'jean':        ['jean', 'denim', 'jeans'],
+    'sweat':       ['sweat', 'sweatshirt', 'sweater'],
+    'pull':        ['pull', 'knitwear', 'tricot', 'pullover'],
+    'chemise':     ['chemise', 'shirt', 'flanelle'],
+    'chaussures':  ['chaussures', 'shoes', 'sneakers', 'baskets'],
+    'short':       ['short', 'shorts'],
+    'robe':        ['robe', 'dress'],
+    'ensemble':    ['ensemble', 'set', 'costume'],
+}
+
 def classify_with_claude_batch(titles_batch):
     """Envoie un batch de titres à Claude Haiku. Retourne {index: [categories]}.
     Retourne {} si ANTHROPIC_API_KEY absent ou erreur API (fallback infer_categories)."""
@@ -493,9 +507,17 @@ for i in range(0, len(all_products), BATCH_SIZE):
         else:
             cats = infer_categories(title)
             category = infer_category(title)
+        base_tags = generate_tags(title)
+        primary_cat = cats[0] if cats else None
+        if primary_cat:
+            existing = set(base_tags.split())
+            extra = [s for s in CATEGORY_SYNONYMS.get(primary_cat, []) if s not in existing]
+            enriched_tags = (base_tags + " " + " ".join(extra)).strip() if extra else base_tags
+        else:
+            enriched_tags = base_tags
         rows.append({
             "id": p['id'],
-            "tags": generate_tags(title),
+            "tags": enriched_tags,
             "category": category,
             "categories": cats,
         })
