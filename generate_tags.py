@@ -2,6 +2,7 @@ import sys
 print("Python version:", sys.version, flush=True)
 print("Starting imports...", flush=True)
 
+import os
 import requests
 print("imported requests", flush=True)
 import anthropic
@@ -402,26 +403,29 @@ CLAUDE_TO_CATEGORY = {
     "accessoire": "Accessoire", "box": "Mix",          "mix": "Mix",
 }
 
-def classify_with_claude(titles_batch):
-    """Envoie un batch de titres à Claude Haiku. Retourne {index: [categories]}."""
-    client = anthropic.Anthropic()
+def classify_with_claude_batch(titles_batch):
+    """Envoie un batch de titres à Claude Haiku. Retourne {index: [categories]}.
+    Retourne {} si ANTHROPIC_API_KEY absent ou erreur API (fallback infer_categories)."""
+    api_key = os.environ.get('ANTHROPIC_API_KEY')
+    if not api_key:
+        return {}
+    client = anthropic.Anthropic(api_key=api_key)
     products_str = "\n".join(f"{i}|{title}" for i, title in enumerate(titles_batch))
     prompt = (
-        "Tu es un expert en vêtements vintage wholesale. Pour chaque titre de produit, "
-        "donne les catégories appropriées parmi cette liste EXACTE uniquement : "
+        "Tu es un expert en vêtements vintage wholesale. Pour chaque titre, "
+        "donne les catégories parmi cette liste EXACTE uniquement : "
         "tshirt, sweat, pull, hoodie, chemise, veste, manteau, doudoune, pantalon, jean, "
         "jogging, short, robe, combinaison, ensemble, polo, polaire, chaussures, accessoire, box, mix.\n\n"
         "Règles :\n"
-        "- Maximum 3 catégories par produit\n"
-        "- La première est la catégorie principale\n"
+        "- Maximum 3 catégories par produit, la première est la principale\n"
         "- UNIQUEMENT des valeurs de la liste exacte\n"
-        "- Une ligne par produit, format : INDEX|cat1,cat2,cat3\n"
+        "- Une ligne par produit, format strict : INDEX|cat1,cat2\n"
         "- Rien d'autre dans ta réponse\n\n"
         f"Produits :\n{products_str}"
     )
     message = client.messages.create(
         model="claude-haiku-4-5-20251001",
-        max_tokens=1024,
+        max_tokens=2048,
         messages=[{"role": "user", "content": prompt}]
     )
     result = {}
@@ -477,7 +481,7 @@ for i in range(0, len(all_products), BATCH_SIZE):
     batch = all_products[i:i + BATCH_SIZE]
     titles = [p.get('title') or '' for p in batch]
     try:
-        claude_result = classify_with_claude(titles)
+        claude_result = classify_with_claude_batch(titles)
     except Exception as e:
         print(f"   ⚠️ Claude API error (batch {i//BATCH_SIZE + 1}): {e} — fallback règles")
         claude_result = {}
