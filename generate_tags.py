@@ -389,7 +389,7 @@ def infer_categories(title):
 
 VALID_CATS = {
     "tshirt","sweat","pull","hoodie","chemise","veste","manteau","doudoune",
-    "pantalon","jean","jogging","short","robe","salopette","ensemble",
+    "pantalon","jean","jogging","short","robe","combinaison","ensemble",
     "polo","polaire","chaussures","accessoire","box","mix"
 }
 
@@ -398,23 +398,33 @@ CLAUDE_TO_CATEGORY = {
     "hoodie": "Sweat-shirt",  "chemise": "Chemise",    "veste": "Veste",
     "manteau": "Manteau",     "doudoune": "Manteau",   "pantalon": "Pantalon",
     "jean": "Pantalon",       "jogging": "Pantalon",   "short": "Short",
-    "robe": "Robe",           "salopette": "Combinaison",   "ensemble": "Combinaison",
+    "robe": "Robe",           "combinaison": "Combinaison", "ensemble": "Combinaison",
     "polo": "Polo",           "polaire": "Veste",      "chaussures": "Chaussures",
     "accessoire": "Accessoire", "box": "Mix",          "mix": "Mix",
 }
 
 CATEGORY_SYNONYMS = {
-    'combinaison': ['salopette', 'dungarees', 'overalls', 'combinaison'],
-    'veste':       ['veste', 'jacket', 'blouson', 'manteau'],
-    'jogging':     ['jogging', 'tracksuit', 'survetement', 'jogger'],
-    'jean':        ['jean', 'denim', 'jeans'],
-    'sweat':       ['sweat', 'sweatshirt', 'sweater'],
-    'pull':        ['pull', 'knitwear', 'tricot', 'pullover'],
-    'chemise':     ['chemise', 'shirt', 'flanelle'],
-    'chaussures':  ['chaussures', 'shoes', 'sneakers', 'baskets'],
-    'short':       ['short', 'shorts'],
-    'robe':        ['robe', 'dress'],
-    'ensemble':    ['ensemble', 'set', 'costume'],
+    'tshirt':      ['tshirt', 't-shirt', 'tee', 'top', 'maglietta', 'camiseta', 'tee-shirt', 'shirt', 'maglia'],
+    'sweat':       ['sweat', 'sweatshirt', 'sweater', 'felpa', 'sudadera', 'moletom', 'pullover'],
+    'pull':        ['pull', 'pullover', 'knitwear', 'tricot', 'maglia', 'jersey', 'maglione', 'suéter', 'strickjacke', 'malha'],
+    'hoodie':      ['hoodie', 'sweat', 'sweat capuche', 'hooded', 'kapuzenpullover', 'felpa cappuccio', 'sudadera capucha', 'veste'],
+    'chemise':     ['chemise', 'shirt', 'blouse', 'camicia', 'camisa', 'hemd', 'flannel', 'flanelle'],
+    'veste':       ['veste', 'jacket', 'blouson', 'giacca', 'chaqueta', 'jacke', 'jaqueta', 'coat'],
+    'manteau':     ['manteau', 'coat', 'veste', 'jacket', 'cappotto', 'abrigo', 'mantel', 'sobretudo'],
+    'doudoune':    ['doudoune', 'puffer', 'veste', 'jacket', 'down jacket', 'piumino', 'plumas', 'steppjacke'],
+    'pantalon':    ['pantalon', 'pants', 'trousers', 'pantalone', 'pantalones', 'hose', 'calça', 'bottoms'],
+    'jean':        ['jean', 'jeans', 'denim', 'pantalon', 'pants', 'trousers'],
+    'jogging':     ['jogging', 'tracksuit', 'survetement', 'survêtement', 'tuta', 'chandal', 'chándal', 'trainingsanzug', 'jogger', 'trackpant', 'pantalon', 'pants'],
+    'short':       ['short', 'shorts', 'pantaloncini', 'pantalón corto', 'kurze hose', 'bermuda'],
+    'robe':        ['robe', 'dress', 'vestito', 'vestido', 'kleid'],
+    'combinaison': ['combinaison', 'salopette', 'dungarees', 'overalls', 'overall', 'tuta', 'peto', 'latzhose', 'jardineira', 'shortall'],
+    'ensemble':    ['ensemble', 'set', 'costume', 'coordinato', 'conjunto', 'anzug'],
+    'polo':        ['polo', 'polo shirt'],
+    'polaire':     ['polaire', 'fleece', 'veste', 'jacket', 'pile', 'forro polar', 'fleecejacke'],
+    'chaussures':  ['chaussures', 'shoes', 'sneakers', 'baskets', 'scarpe', 'zapatos', 'schuhe', 'sapatos', 'trainers'],
+    'accessoire':  ['accessoire', 'accessory', 'accessories', 'accessori', 'accesorios', 'zubehör'],
+    'box':         ['box', 'bale', 'lot', 'pack', 'balle', 'fardo'],
+    'mix':         ['mix', 'mixed', 'mélange', 'misto', 'mezcla', 'gemischt'],
 }
 
 def classify_with_claude_batch(titles_batch):
@@ -429,7 +439,7 @@ def classify_with_claude_batch(titles_batch):
         "Tu es un expert en vêtements vintage wholesale. Pour chaque titre, "
         "donne les catégories parmi cette liste EXACTE uniquement : "
         "tshirt, sweat, pull, hoodie, chemise, veste, manteau, doudoune, pantalon, jean, "
-        "jogging, short, robe, salopette, ensemble, polo, polaire, chaussures, accessoire, box, mix.\n\n"
+        "jogging, short, robe, combinaison, ensemble, polo, polaire, chaussures, accessoire, box, mix.\n\n"
         "Règles :\n"
         "- Maximum 3 catégories par produit, la première est la principale\n"
         "- UNIQUEMENT des valeurs de la liste exacte\n"
