@@ -389,7 +389,7 @@ def infer_categories(title):
 
 VALID_CATS = {
     "tshirt","sweat","pull","hoodie","chemise","veste","manteau","doudoune",
-    "pantalon","jean","jogging","short","robe","combinaison","ensemble",
+    "pantalon","jean","jogging","short","robe","salopette","ensemble",
     "polo","polaire","chaussures","accessoire","box","mix"
 }
 
@@ -398,7 +398,7 @@ CLAUDE_TO_CATEGORY = {
     "hoodie": "Sweat-shirt",  "chemise": "Chemise",    "veste": "Veste",
     "manteau": "Manteau",     "doudoune": "Manteau",   "pantalon": "Pantalon",
     "jean": "Pantalon",       "jogging": "Pantalon",   "short": "Short",
-    "robe": "Robe",           "combinaison": "Combinaison", "ensemble": "Combinaison",
+    "robe": "Robe",           "salopette": "Combinaison",   "ensemble": "Combinaison",
     "polo": "Polo",           "polaire": "Veste",      "chaussures": "Chaussures",
     "accessoire": "Accessoire", "box": "Mix",          "mix": "Mix",
 }
@@ -415,7 +415,7 @@ def classify_with_claude_batch(titles_batch):
         "Tu es un expert en vêtements vintage wholesale. Pour chaque titre, "
         "donne les catégories parmi cette liste EXACTE uniquement : "
         "tshirt, sweat, pull, hoodie, chemise, veste, manteau, doudoune, pantalon, jean, "
-        "jogging, short, robe, combinaison, ensemble, polo, polaire, chaussures, accessoire, box, mix.\n\n"
+        "jogging, short, robe, salopette, ensemble, polo, polaire, chaussures, accessoire, box, mix.\n\n"
         "Règles :\n"
         "- Maximum 3 catégories par produit, la première est la principale\n"
         "- UNIQUEMENT des valeurs de la liste exacte\n"
