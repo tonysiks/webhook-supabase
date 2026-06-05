@@ -174,6 +174,7 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
 // ── Taux de change X → EUR ────────────────────────────────────────────────────
 async function fetchRate(base, fallback) {
+  if (base === 'EUR') return 1;
   try {
     const res = await fetch(`https://api.exchangerate-api.com/v4/latest/${base}`);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
