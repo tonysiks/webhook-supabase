@@ -10,17 +10,25 @@ module.exports = {
     name: 'Vintage Wholesale Supply',
     taskId: 'zYM43vAB2qnEpHKoM',
     currency: 'GBP',
-    mapProduct: (p) => ({
-      title:      p.title || null,
-      url:        p.source?.canonicalUrl || null,
-      price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
-      image_url:  p.medias?.[0]?.url || null,
-      category:   p.categories?.[0] || null,
-      tags:       normalizeTags(p.tags),
-      stockStatus: p.variants?.[0]?.price?.stockStatus ||
-                   p.variants?.[0]?.stockStatus ||
-                   (p.available !== undefined ? (p.available ? 'InStock' : 'OutOfStock') : null),
-    }),
+    mapProduct: (p) => {
+      let price = p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null;
+      const desc = p.description || '';
+      const m = desc.match(/£([\d.]+)\s*per piece.*?(\d+)\s*pieces?\s*per\s*bale/i);
+      if (m) {
+        price = Math.round(parseFloat(m[1]) * parseInt(m[2]) * 100) / 100;
+      }
+      return {
+        title:      p.title || null,
+        url:        p.source?.canonicalUrl || null,
+        price,
+        image_url:  p.medias?.[0]?.url || null,
+        category:   p.categories?.[0] || null,
+        tags:       normalizeTags(p.tags),
+        stockStatus: p.variants?.[0]?.price?.stockStatus ||
+                     p.variants?.[0]?.stockStatus ||
+                     (p.available !== undefined ? (p.available ? 'InStock' : 'OutOfStock') : null),
+      };
+    },
   },
 
   wing999: {
