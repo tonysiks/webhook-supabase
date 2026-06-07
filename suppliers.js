@@ -55,6 +55,9 @@ module.exports = {
         image_url:  p.medias?.[0]?.url || null,
         category:   (() => { const c = this.categoryMap[rawCat] || rawCat || null; return c && /^\d+$/.test(String(c).trim()) ? null : c; })(),
         tags:       normalizeTags(p.tags),
+        stockStatus: p.variants?.[0]?.price?.stockStatus ||
+                     p.variants?.[0]?.stockStatus ||
+                     (p.available !== undefined ? (p.available ? 'InStock' : 'OutOfStock') : null),
       };
     },
   },
