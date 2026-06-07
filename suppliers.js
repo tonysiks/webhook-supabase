@@ -435,17 +435,31 @@ module.exports = {
     name: 'London Vintage Wholesale',
     taskId: 'tonysiks~london-vintage-wholesale',
     currency: 'GBP',
-    mapProduct: (p) => ({
-      title:      p.title || null,
-      url:        p.source?.canonicalUrl || null,
-      price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
-      image_url:  p.medias?.[0]?.url || null,
-      category:   p.categories?.[0] || null,
-      tags:       normalizeTags(p.tags),
-      stockStatus: p.variants?.[0]?.price?.stockStatus ||
-                   p.variants?.[0]?.stockStatus ||
-                   (p.available !== undefined ? (p.available ? 'InStock' : 'OutOfStock') : null),
-    }),
+    mapProduct: (p) => {
+      const title = p.title || '';
+      let price = p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null;
+      const mKiloFwd = title.match(/£([\d.]+)\s*\/\s*[Kk]ilo.*?(\d+)\s*[Kk][Gg]/i);
+      const mKiloRev = title.match(/(\d+)\s*[Kk][Gg].*?£([\d.]+)\s*\/\s*[Kk]ilo/i);
+      const mPiece   = title.match(/£([\d.]+)\s*\/\s*[Pp]iece/i);
+      if (mKiloFwd) {
+        price = Math.round(parseFloat(mKiloFwd[1]) * parseInt(mKiloFwd[2]) * 100) / 100;
+      } else if (mKiloRev) {
+        price = Math.round(parseFloat(mKiloRev[2]) * parseInt(mKiloRev[1]) * 100) / 100;
+      } else if (mPiece) {
+        price = Math.round(parseFloat(mPiece[1]) * 100) / 100;
+      }
+      return {
+        title:      title || null,
+        url:        p.source?.canonicalUrl || null,
+        price,
+        image_url:  p.medias?.[0]?.url || null,
+        category:   p.categories?.[0] || null,
+        tags:       normalizeTags(p.tags),
+        stockStatus: p.variants?.[0]?.price?.stockStatus ||
+                     p.variants?.[0]?.stockStatus ||
+                     (p.available !== undefined ? (p.available ? 'InStock' : 'OutOfStock') : null),
+      };
+    },
   },
 
   thriftvintage: {
