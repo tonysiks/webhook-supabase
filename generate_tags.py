@@ -547,5 +547,7 @@ for p in rows:
             print(f"   ✅ {total}/{len(rows)} produits mis à jour...")
     else:
         errors += 1
+        if errors <= 5:
+            print(f"   PATCH erreur {resp.status_code} pour id={p['id']}: {resp.text[:200]}")
 
 print(f"\n🎉 Terminé: {total} tags générés, {errors} erreurs")
