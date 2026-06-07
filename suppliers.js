@@ -325,7 +325,7 @@ module.exports = {
   raes: {
     name: 'RAES',
     taskId: 'tonysiks~raes-vintage-wholesale',
-    currency: 'EUR',
+    currency: 'USD',
     mapProduct: (p) => ({
       title:      p.title || null,
       url:        p.source?.canonicalUrl || null,
