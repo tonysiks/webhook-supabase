@@ -113,7 +113,7 @@ module.exports = {
   vs1989: {
     name: 'Vintage Suppliers 1989',
     taskId: 'bzXhLalqv5UTFyJSB',
-    currency: 'GBP',
+    currency: 'EUR',
     mapProduct: (p) => {
       let price = p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null;
       const mPrice = (p.description || '').match(/Starting from ([\d,\.]+)[£€$]\/Kg/i);
