@@ -114,17 +114,25 @@ module.exports = {
     name: 'Vintage Suppliers 1989',
     taskId: 'bzXhLalqv5UTFyJSB',
     currency: 'GBP',
-    mapProduct: (p) => ({
-      title:      p.title || null,
-      url:        p.source?.canonicalUrl || null,
-      price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
-      image_url:  p.medias?.[0]?.url || null,
-      category:   p.categories?.[0] || null,
-      tags:       normalizeTags(p.tags),
-      stockStatus: p.variants?.[0]?.price?.stockStatus ||
-                   p.variants?.[0]?.stockStatus ||
-                   (p.available !== undefined ? (p.available ? 'InStock' : 'OutOfStock') : null),
-    }),
+    mapProduct: (p) => {
+      let price = p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null;
+      const mPrice = (p.description || '').match(/Starting from ([\d,\.]+)[£€$]\/Kg/i);
+      const mKg    = (p.title || '').match(/(\d+)\s*KG/i);
+      if (mPrice && mKg) {
+        price = Math.round(parseFloat(mPrice[1].replace(',', '.')) * parseInt(mKg[1]) * 100) / 100;
+      }
+      return {
+        title:      p.title || null,
+        url:        p.source?.canonicalUrl || null,
+        price,
+        image_url:  p.medias?.[0]?.url || null,
+        category:   p.categories?.[0] || null,
+        tags:       normalizeTags(p.tags),
+        stockStatus: p.variants?.[0]?.price?.stockStatus ||
+                     p.variants?.[0]?.stockStatus ||
+                     (p.available !== undefined ? (p.available ? 'InStock' : 'OutOfStock') : null),
+      };
+    },
   },
 
   unitedvintage: {
