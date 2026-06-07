@@ -150,6 +150,9 @@ module.exports = {
       image_url:  p.medias?.[0]?.url || null,
       category:   p.categories?.[0] || null,
       tags:       normalizeTags(p.tags),
+      stockStatus: p.variants?.[0]?.price?.stockStatus ||
+                   p.variants?.[0]?.stockStatus ||
+                   (p.available !== undefined ? (p.available ? 'InStock' : 'OutOfStock') : null),
       };
     },
   },
