@@ -291,7 +291,7 @@ module.exports = {
   skullwholesale: {
     name: 'Skull Wholesale',
     taskId: 'tonysiks~skull-wholesale',
-    currency: 'EUR',
+    currency: 'USD',
     mapProduct: (p) => ({
       title:      p.title || null,
       url:        p.source?.canonicalUrl || null,
