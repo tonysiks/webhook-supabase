@@ -164,7 +164,7 @@ module.exports = {
     mapProduct: (p, tagzPrices) => ({
       title:      p.title || null,
       url:        p.source?.canonicalUrl || null,
-      price:      tagzPrices?.[p.source?.canonicalUrl?.split('/products/')?.[1]] ?? (p.variants?.[0]?.price?.current ? p.variants[0].price.current / 100 : null),
+      price:      tagzPrices?.[p.source?.canonicalUrl?.split('/products/')?.[1]] != null ? Math.round(tagzPrices[p.source.canonicalUrl.split('/products/')[1]] * 1.2 * 100) / 100 : (p.variants?.[0]?.price?.current ? p.variants[0].price.current / 100 : null),
       image_url:  p.medias?.[0]?.url || null,
       category:   p.categories?.[0] || null,
       fournisseur: 'TAGZ',
