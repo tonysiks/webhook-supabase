@@ -176,13 +176,14 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 async function fetchRate(base, fallback) {
   if (base === 'EUR') return 1;
   try {
-    const res = await fetch(`https://api.exchangerate-api.com/v4/latest/${base}`);
+    const res = await fetch(`https://api.exchangerate-api.com/v4/latest/EUR`);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
-    const rate = data.rates?.EUR;
-    if (!rate) throw new Error('Taux EUR introuvable');
-    console.log(`  💱 Taux ${base}/EUR : ${rate}`);
-    return rate;
+    const rate = data.rates?.[base];
+    if (!rate) throw new Error('Taux introuvable');
+    const eurRate = 1 / rate;
+    console.log(`  💱 Taux ${base}/EUR : ${eurRate}`);
+    return eurRate;
   } catch (e) {
     console.warn(`  ⚠️  fetchRate(${base}) échoué (${e.message}), fallback ${fallback}`);
     return fallback;
