@@ -320,7 +320,7 @@ def infer_categories(title):
     t = title.lower()
 
     is_box = "box" in t or "bale" in t or "lote" in t
-    is_mix = is_box or any(kw in t for kw in ["bundle", "mix", "kilo", "bale", "sack", "pack of", "assort", "lote"])
+    is_mix = any(kw in t for kw in ["bundle", "mix", "kilo", "sack", "pack of", "assort", "lote"])
 
     cats = []
     if any(kw in t for kw in ["dungaree", "salopette", "coverall", "combinaison", "overall", "overalls"]):
