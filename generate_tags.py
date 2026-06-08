@@ -260,7 +260,7 @@ def generate_tags(title):
 
 CATEGORY_KEYWORDS = [
     # T-shirts — avant "shirt" pour éviter les faux positifs
-    (["t-shirt", "tshirt", "t shirt", "tee shirt", " tee", "blouse", "camiseta", "camisetas", "singlet", "singlets"], "T-shirt"),
+    (["t-shirt", "tshirt", "t shirt", "tee shirt", "tee-shirt", " tee", "blouse", "camiseta", "camisetas", "singlet", "singlets"], "T-shirt"),
     # Sweats / hoodies — avant "sweater" et "pullover"
     (["sweatshirt", "sweat shirt", "hoodie", "hoody", "hooded sweat", "crewneck", "baja hoodie", "mexican baja"], "Sweat-shirt"),
     # Vestes
@@ -370,7 +370,7 @@ def infer_categories(title):
     elif "chemisier" in t:
         cats = ["chemise", "tshirt"]
     elif any(kw in t for kw in ["shirt", "chemise", "flannel", "overshirt", "overhemden"]):
-        if not any(kw in t for kw in ["sweatshirt", "tshirt", "t-shirt"]):
+        if not any(kw in t for kw in ["sweatshirt", "tshirt", "t-shirt", "t shirt", "tee shirt", "tee-shirt"]):
             cats = ["chemise"]
     elif any(kw in t for kw in ["dress", "robe", "skirt", "jupe"]):
         cats = ["robe"]
