@@ -338,11 +338,27 @@ async function main() {
         const items = await fetchItems(runId);
         console.log(`  ${items.length} items récupérés`);
 
+        // Prix réels pour TAGZ via products.json
+        let tagzPrices = null;
+        if (key === 'tagz') {
+          try {
+            const r = await fetch('https://tagz.now/products.json?limit=250');
+            const d = await r.json();
+            tagzPrices = {};
+            d.products.forEach(p => {
+              tagzPrices[p.handle] = parseFloat(p.variants?.[0]?.price ?? 0);
+            });
+            console.log(`  💰 ${Object.keys(tagzPrices).length} prix TAGZ récupérés via products.json`);
+          } catch (e) {
+            console.warn(`  ⚠️  Impossible de fetch les prix TAGZ: ${e.message}`);
+          }
+        }
+
         const rate = rates[supplier.currency] ?? 1;
         const now = new Date().toISOString();
         const products = items
           .map(p => {
-            const mapped = supplier.mapProduct(p);
+            const mapped = supplier.mapProduct(p, tagzPrices);
             return {
               ...mapped,
               price: mapped.price != null ? Math.round(mapped.price * rate * 100) / 100 : null,
