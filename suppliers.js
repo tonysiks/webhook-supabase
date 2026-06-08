@@ -448,7 +448,7 @@ module.exports = {
   londonvintage: {
     name: 'London Vintage Wholesale',
     taskId: 'tonysiks~london-vintage-wholesale',
-    currency: 'USD',
+    currency: 'GBP',
     mapProduct: (p) => {
       const title = p.title || '';
       let price = p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null;
