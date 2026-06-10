@@ -774,7 +774,7 @@ module.exports = {
     mapProduct: (p) => ({
       title:      p.title || null,
       url:        p.source?.canonicalUrl || null,
-      price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
+      price:      p.variants?.[0]?.price?.current != null ? Math.round(p.variants[0].price.current / 100 * 1.2 * 100) / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
       fournisseur: 'DublinWholesaleVintage',
       stockStatus: p.variants?.[0]?.price?.stockStatus ||
