@@ -1000,7 +1000,7 @@ module.exports = {
     mapProduct: (p) => ({
       url:        p.source?.canonicalUrl || null,
       title:      p.title || null,
-      price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
+      price:      p.variants?.[0]?.price?.current != null ? Math.round(p.variants[0].price.current / 100 / 1.10 * 100) / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
       stockStatus: p.variants?.[0]?.stockStatus || null,
       fournisseur: 'VintageSupplier',
