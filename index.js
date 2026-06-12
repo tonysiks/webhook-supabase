@@ -119,6 +119,7 @@ app.post('/create-checkout-session', async (req, res) => {
       mode,
       success_url: successUrl,
       cancel_url: cancelUrl,
+      allow_promotion_codes: true,
     });
 
     res.json({ url: session.url });
@@ -221,6 +222,7 @@ app.post('/subscribe', async (req, res) => {
       success_url: successWithEmail,
       cancel_url: cancelUrl,
       metadata: { email },
+      allow_promotion_codes: true,
     });
 
     // Upsert le subscriber en Supabase
