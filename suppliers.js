@@ -578,23 +578,6 @@ module.exports = {
     }),
   },
 
-  vintageloversrome: {
-    name: 'VintageLoversRome',
-    taskId: 'tonysiks~vintage-lovers-rome',
-    currency: 'EUR',
-    mapProduct: (p) => ({
-      title:      p.title || null,
-      url:        p.source?.canonicalUrl || null,
-      price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
-      image_url:  p.medias?.[0]?.url || null,
-      category:   p.categories?.[0] || null,
-      tags:       normalizeTags(p.tags),
-      stockStatus: p.variants?.[0]?.price?.stockStatus ||
-                   p.variants?.[0]?.stockStatus ||
-                   (p.available !== undefined ? (p.available ? 'InStock' : 'OutOfStock') : null),
-    }),
-  },
-
   boomvintagewholesale: {
     name: 'BoomVintageWholesale',
     taskId: 'tonysiks~boom-vintage-wholesale',
@@ -793,22 +776,6 @@ module.exports = {
       price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
       fournisseur: 'VentorBox',
-      stockStatus: p.variants?.[0]?.price?.stockStatus ||
-                   p.variants?.[0]?.stockStatus ||
-                   (p.available !== undefined ? (p.available ? 'InStock' : 'OutOfStock') : null),
-    }),
-  },
-
-  repeatvintagewholesale: {
-    name: 'RepeatVintageWholesale',
-    taskId: 'tonysiks~repeat-vintage-wholesale',
-    currency: 'USD',
-    mapProduct: (p) => ({
-      title:      p.title || null,
-      url:        p.source?.canonicalUrl || null,
-      price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
-      image_url:  p.medias?.[0]?.url || null,
-      fournisseur: 'RepeatVintageWholesale',
       stockStatus: p.variants?.[0]?.price?.stockStatus ||
                    p.variants?.[0]?.stockStatus ||
                    (p.available !== undefined ? (p.available ? 'InStock' : 'OutOfStock') : null),
@@ -1018,20 +985,6 @@ module.exports = {
       image_url:  p.medias?.[0]?.url || null,
       stockStatus: p.variants?.[0]?.stockStatus || null,
       fournisseur: 'XVintageWholesales',
-    }),
-  },
-
-  vintageempirewholesale: {
-    name: 'VintageEmpireWholesale',
-    taskId: 'tonysiks~vintage-empire-wholesale',
-    currency: 'GBP',
-    mapProduct: (p) => ({
-      url:        p.source?.canonicalUrl || null,
-      title:      p.title || null,
-      price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
-      image_url:  p.medias?.[0]?.url || null,
-      stockStatus: p.variants?.[0]?.stockStatus || null,
-      fournisseur: 'VintageEmpireWholesale',
     }),
   },
 
