@@ -1062,6 +1062,21 @@ module.exports = {
     }),
   },
 
+  vintageFiasco: {
+    name: 'Vintage Fiasco',
+    taskId: 'tonysiks~vintage-fiasco',
+    currency: 'EUR',
+    mapProduct: (p) => ({
+      title:       p.name || null,
+      url:         p.url || null,
+      price:       p.price || null,
+      image_url:   p.featuredImage || null,
+      category:    p.categories?.[0] || null,
+      tags:        normalizeTags(p.tags),
+      stockStatus: p.available === false ? 'OutOfStock' : 'InStock',
+    }),
+  },
+
 };
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
