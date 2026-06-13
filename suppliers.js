@@ -1094,6 +1094,21 @@ module.exports = {
     }),
   },
 
+  worldVintageWholesale: {
+    name: 'World Vintage Wholesale',
+    taskId: 'tonysiks~world-vintage-wholesale',
+    currency: 'USD',
+    mapProduct: (p) => ({
+      title:       p.title || null,
+      url:         p.url || null,
+      price:       p.price || null,
+      image_url:   p.image_url || null,
+      category:    null,
+      tags:        normalizeTags([]),
+      stockStatus: p.stockStatus || 'InStock',
+    }),
+  },
+
 };
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
