@@ -767,6 +767,29 @@ app.post('/get-invoices', async (req, res) => {
   }
 });
 
+// ── Contact form ──────────────────────────────────────────────────────────────
+app.post('/contact', async (req, res) => {
+  res.set('Access-Control-Allow-Origin', '*');
+  const { nom, email, sujet, message } = req.body || {};
+  if (!nom || !email || !sujet || !message) {
+    return res.status(400).json({ error: 'Champs manquants' });
+  }
+  try {
+    const resend = new Resend(process.env.RESEND_API_KEY);
+    await resend.emails.send({
+      from: 'contact@the-good.one',
+      to:   'contact@the-good.one',
+      replyTo: email,
+      subject: `[Contact] ${sujet}`,
+      text: `De : ${nom} <${email}>\n\n${message}`,
+    });
+    res.json({ ok: true });
+  } catch (e) {
+    console.error('[contact] Erreur:', e.message);
+    res.status(500).json({ error: e.message });
+  }
+});
+
 // ── Health check ──────────────────────────────────────────────────────────────
 app.get('/', (req, res) => {
   res.json({
