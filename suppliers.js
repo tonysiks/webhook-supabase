@@ -1091,7 +1091,7 @@ module.exports = {
   vintageKilosaleGermany: {
     name: 'Vintage Kilosale Germany',
     taskId: 'tonysiks~vintage-kilosale-germany',
-    currency: 'USD',
+    currency: 'EUR',
     mapProduct: (p) => ({
       title:       p.title || null,
       url:         p.source?.canonicalUrl || null,
