@@ -768,6 +768,12 @@ app.post('/get-invoices', async (req, res) => {
 });
 
 // ── Contact form ──────────────────────────────────────────────────────────────
+app.options('/contact', (req, res) => {
+  res.set('Access-Control-Allow-Origin', '*');
+  res.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.set('Access-Control-Allow-Headers', 'Content-Type');
+  res.sendStatus(204);
+});
 app.post('/contact', async (req, res) => {
   res.set('Access-Control-Allow-Origin', '*');
   const { nom, email, sujet, message } = req.body || {};
