@@ -1107,7 +1107,7 @@ module.exports = {
   worldVintageWholesale: {
     name: 'World Vintage Wholesale',
     taskId: 'tonysiks~world-vintage-wholesale',
-    currency: 'USD',
+    currency: 'GBP',
     mapProduct: (p) => ({
       title:       p.title || null,
       url:         p.url || null,
