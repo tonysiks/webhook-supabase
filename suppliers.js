@@ -917,7 +917,7 @@ module.exports = {
   //     url:        p.source?.canonicalUrl || null,
   //     price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
   //     image_url:  p.medias?.[0]?.url || null,
-      variant_title: p.variants?.[0]?.title || null,
+  //     variant_title: p.variants?.[0]?.title || null,
   //     category:   p.categories?.[0] || null,
   //     tags:       normalizeTags(p.tags),
   //   }),
