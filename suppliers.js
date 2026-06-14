@@ -1,4 +1,4 @@
-﻿// ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
 // SUPPLIERS CONFIG
 // Pour ajouter un fournisseur : copier un bloc et adapter.
 // taskId = ID de la task Apify (visible dans l'URL de la task)
@@ -22,6 +22,7 @@ module.exports = {
         url:        p.source?.canonicalUrl || null,
         price,
         image_url:  p.medias?.[0]?.url || null,
+      variant_title: p.variants?.[0]?.title || null,
         category:   p.categories?.[0] || null,
         tags:       normalizeTags(p.tags),
         stockStatus: p.variants?.[0]?.price?.stockStatus ||
@@ -53,6 +54,7 @@ module.exports = {
         url:        p.source?.canonicalUrl || null,
         price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
         image_url:  p.medias?.[0]?.url || null,
+      variant_title: p.variants?.[0]?.title || null,
         category:   (() => { const c = this.categoryMap[rawCat] || rawCat || null; return c && /^\d+$/.test(String(c).trim()) ? null : c; })(),
         tags:       normalizeTags(p.tags),
         stockStatus: p.variants?.[0]?.price?.stockStatus ||
@@ -71,6 +73,7 @@ module.exports = {
       url:        p.source?.canonicalUrl || null,
       price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
+      variant_title: p.variants?.[0]?.title || null,
       category:   p.categories?.[0] || null,
       tags:       normalizeTags(p.tags),
       stockStatus: p.variants?.[0]?.price?.stockStatus ||
@@ -88,6 +91,7 @@ module.exports = {
       url:        p.source?.canonicalUrl || null,
       price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
+      variant_title: p.variants?.[0]?.title || null,
       category:   p.categories?.[0] || null,
       tags:       normalizeTags(p.tags),
       stockStatus: p.variants?.[0]?.price?.stockStatus ||
@@ -105,6 +109,7 @@ module.exports = {
       url:        p.source?.canonicalUrl || null,
       price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
+      variant_title: p.variants?.[0]?.title || null,
       category:   p.categories?.[0] || null,
       tags:       normalizeTags(p.tags),
       stockStatus: p.variants?.[0]?.price?.stockStatus ||
@@ -129,6 +134,7 @@ module.exports = {
         url:        p.source?.canonicalUrl || null,
         price,
         image_url:  p.medias?.[0]?.url || null,
+      variant_title: p.variants?.[0]?.title || null,
         category:   p.categories?.[0] || null,
         tags:       normalizeTags(p.tags),
         stockStatus: p.variants?.[0]?.price?.stockStatus ||
@@ -148,6 +154,7 @@ module.exports = {
       url:        p.source?.canonicalUrl || null,
       price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
+      variant_title: p.variants?.[0]?.title || null,
       category:   p.categories?.[0] || null,
       tags:       normalizeTags(p.tags),
       stockStatus: p.variants?.[0]?.price?.stockStatus ||
@@ -166,6 +173,7 @@ module.exports = {
       url:        p.source?.canonicalUrl || null,
       price:      tagzPrices?.[p.source?.canonicalUrl?.split('/products/')?.[1]] != null ? Math.round(tagzPrices[p.source.canonicalUrl.split('/products/')[1]] * 1.2 * 100) / 100 : (p.variants?.[0]?.price?.current ? p.variants[0].price.current / 100 : null),
       image_url:  p.medias?.[0]?.url || null,
+      variant_title: p.variants?.[0]?.title || null,
       category:   p.categories?.[0] || null,
       fournisseur: 'TAGZ',
       tags:       normalizeTags(p.tags),
@@ -184,6 +192,7 @@ module.exports = {
       url:        p.source?.canonicalUrl || null,
       price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
+      variant_title: p.variants?.[0]?.title || null,
       category:   p.categories?.[0] || null,
       tags:       normalizeTags(p.tags),
       stockStatus: p.variants?.[0]?.price?.stockStatus ||
@@ -201,6 +210,7 @@ module.exports = {
       url:        p.source?.canonicalUrl || null,
       price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
+      variant_title: p.variants?.[0]?.title || null,
       category:   p.categories?.[0] || null,
       tags:       normalizeTags(p.tags),
       stockStatus: p.variants?.[0]?.price?.stockStatus ||
@@ -218,6 +228,7 @@ module.exports = {
       url:        p.source?.canonicalUrl || null,
       price:      p.variants?.[0]?.price?.current ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
+      variant_title: p.variants?.[0]?.title || null,
       category:   p.categories?.[0] || null,
       tags:       normalizeTags(p.tags),
       stockStatus: p.variants?.[0]?.price?.stockStatus ||
@@ -235,6 +246,7 @@ module.exports = {
       url:        p.source?.canonicalUrl || null,
       price:      p.variants?.[0]?.price?.current ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
+      variant_title: p.variants?.[0]?.title || null,
       category:   p.categories?.[0] || null,
       tags:       normalizeTags(p.tags),
       stockStatus: p.variants?.[0]?.price?.stockStatus ||
@@ -252,6 +264,7 @@ module.exports = {
       url:        p.source?.canonicalUrl || null,
       price:      p.variants?.[0]?.price?.current ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
+      variant_title: p.variants?.[0]?.title || null,
       category:   p.categories?.[0] || null,
       tags:       normalizeTags(p.tags),
       stockStatus: p.variants?.[0]?.price?.stockStatus ||
@@ -269,6 +282,7 @@ module.exports = {
       url:        p.source?.canonicalUrl || null,
       price:      p.variants?.[0]?.price?.current ? Math.round(p.variants[0].price.current / 100 * 1.16 * 100) / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
+      variant_title: p.variants?.[0]?.title || null,
       category:   p.categories?.[0] || null,
       tags:       normalizeTags(p.tags),
       stockStatus: p.variants?.[0]?.price?.stockStatus ||
@@ -286,6 +300,7 @@ module.exports = {
       url:        p.source?.canonicalUrl || null,
       price:      p.variants?.[0]?.price?.current ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
+      variant_title: p.variants?.[0]?.title || null,
       category:   p.categories?.[0] || null,
       tags:       normalizeTags(p.tags),
       stockStatus: p.variants?.[0]?.price?.stockStatus ||
@@ -303,6 +318,7 @@ module.exports = {
       url:        p.source?.canonicalUrl || null,
       price:      p.variants?.[0]?.price?.current ? Math.round(p.variants[0].price.current / 100 / 1.027 * 100) / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
+      variant_title: p.variants?.[0]?.title || null,
       category:   p.categories?.[0] || null,
       tags:       normalizeTags(p.tags),
       stockStatus: p.variants?.[0]?.price?.stockStatus ||
@@ -320,6 +336,7 @@ module.exports = {
       url:        p.source?.canonicalUrl || null,
       price:      p.variants?.[0]?.price?.current ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
+      variant_title: p.variants?.[0]?.title || null,
       category:   p.categories?.[0] || null,
       tags:       normalizeTags(p.tags),
       stockStatus: p.variants?.[0]?.price?.stockStatus ||
@@ -337,6 +354,7 @@ module.exports = {
       url:        p.source?.canonicalUrl || null,
       price:      p.variants?.[0]?.price?.current ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
+      variant_title: p.variants?.[0]?.title || null,
       category:   p.categories?.[0] || null,
       tags:       normalizeTags(p.tags),
       stockStatus: p.variants?.[0]?.price?.stockStatus ||
@@ -354,6 +372,7 @@ module.exports = {
       url:        p.source?.canonicalUrl || null,
       price:      p.variants?.[0]?.price?.current ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
+      variant_title: p.variants?.[0]?.title || null,
       category:   p.categories?.[0] || null,
       tags:       normalizeTags(p.tags),
       stockStatus: p.variants?.[0]?.price?.stockStatus ||
@@ -371,6 +390,7 @@ module.exports = {
       url:        p.source?.canonicalUrl || null,
       price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
+      variant_title: p.variants?.[0]?.title || null,
       category:   p.categories?.[0] || null,
       tags:       normalizeTags(p.tags),
       stockStatus: p.variants?.[0]?.price?.stockStatus ||
@@ -388,6 +408,7 @@ module.exports = {
       url:        p.source?.canonicalUrl || null,
       price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
+      variant_title: p.variants?.[0]?.title || null,
       category:   p.categories?.[0] || null,
       tags:       normalizeTags(p.tags),
       stockStatus: p.variants?.[0]?.price?.stockStatus ||
@@ -405,6 +426,7 @@ module.exports = {
       url:        p.source?.canonicalUrl || null,
       price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
+      variant_title: p.variants?.[0]?.title || null,
       category:   p.categories?.[0] || null,
       tags:       normalizeTags(p.tags),
       stockStatus: p.variants?.[0]?.price?.stockStatus ||
@@ -422,6 +444,7 @@ module.exports = {
       url:        p.source?.canonicalUrl || null,
       price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
+      variant_title: p.variants?.[0]?.title || null,
       category:   p.categories?.[0] || null,
       tags:       normalizeTags(p.tags),
       stockStatus: p.variants?.[0]?.price?.stockStatus ||
@@ -467,6 +490,7 @@ module.exports = {
         url:        p.source?.canonicalUrl || null,
         price,
         image_url:  p.medias?.[0]?.url || null,
+      variant_title: p.variants?.[0]?.title || null,
         category:   p.categories?.[0] || null,
         tags:       normalizeTags(p.tags),
         stockStatus: p.variants?.[0]?.price?.stockStatus ||
@@ -485,6 +509,7 @@ module.exports = {
       url:        p.source?.canonicalUrl || null,
       price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
+      variant_title: p.variants?.[0]?.title || null,
       category:   p.categories?.[0] || null,
       tags:       normalizeTags(p.tags),
       stockStatus: p.variants?.[0]?.price?.stockStatus ||
@@ -502,6 +527,7 @@ module.exports = {
       url:        p.source?.canonicalUrl || null,
       price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
+      variant_title: p.variants?.[0]?.title || null,
       category:   p.categories?.[0] || null,
       tags:       normalizeTags(p.tags),
       stockStatus: p.variants?.[0]?.price?.stockStatus ||
@@ -519,6 +545,7 @@ module.exports = {
       url:        p.source?.canonicalUrl || null,
       price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
+      variant_title: p.variants?.[0]?.title || null,
       category:   p.categories?.[0] || null,
       tags:       normalizeTags(p.tags),
       stockStatus: p.variants?.[0]?.price?.stockStatus ||
@@ -536,6 +563,7 @@ module.exports = {
       url:        p.source?.canonicalUrl || null,
       price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
+      variant_title: p.variants?.[0]?.title || null,
       category:   p.categories?.[0] || null,
       tags:       normalizeTags(p.tags),
       stockStatus: p.variants?.[0]?.price?.stockStatus ||
@@ -553,6 +581,7 @@ module.exports = {
       url:        p.source?.canonicalUrl || null,
       price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
+      variant_title: p.variants?.[0]?.title || null,
       category:   p.categories?.[0] || null,
       tags:       normalizeTags(p.tags),
       stockStatus: p.variants?.[0]?.price?.stockStatus ||
@@ -570,6 +599,7 @@ module.exports = {
       url:        p.source?.canonicalUrl || null,
       price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
+      variant_title: p.variants?.[0]?.title || null,
       category:   p.categories?.[0] || null,
       tags:       normalizeTags(p.tags),
       stockStatus: p.variants?.[0]?.price?.stockStatus ||
@@ -587,6 +617,7 @@ module.exports = {
       url:        p.source?.canonicalUrl || null,
       price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
+      variant_title: p.variants?.[0]?.title || null,
       fournisseur: 'BoomVintageWholesale',
       stockStatus: p.variants?.[0]?.price?.stockStatus ||
                    p.variants?.[0]?.stockStatus ||
@@ -603,6 +634,7 @@ module.exports = {
       url:        p.source?.canonicalUrl || null,
       price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
+      variant_title: p.variants?.[0]?.title || null,
       fournisseur: 'PremiumVintageWholesale',
       stockStatus: p.variants?.[0]?.price?.stockStatus ||
                    p.variants?.[0]?.stockStatus ||
@@ -633,6 +665,7 @@ module.exports = {
       url:        p.source?.canonicalUrl || null,
       price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
+      variant_title: p.variants?.[0]?.title || null,
       fournisseur: 'TheHubVintageWholesale',
       stockStatus: p.variants?.[0]?.price?.stockStatus ||
                    p.variants?.[0]?.stockStatus ||
@@ -649,6 +682,7 @@ module.exports = {
       url:        p.source?.canonicalUrl || null,
       price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
+      variant_title: p.variants?.[0]?.title || null,
       fournisseur: 'SPVintageWholesale',
       stockStatus: p.variants?.[0]?.price?.stockStatus ||
                    p.variants?.[0]?.stockStatus ||
@@ -665,6 +699,7 @@ module.exports = {
       url:        p.source?.canonicalUrl || null,
       price:      p.variants?.[0]?.price?.current != null ? Math.round(p.variants[0].price.current / 100 / 1.337 * 100) / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
+      variant_title: p.variants?.[0]?.title || null,
       fournisseur: 'VintageWholesaleStore',
       stockStatus: p.variants?.[0]?.price?.stockStatus ||
                    p.variants?.[0]?.stockStatus ||
@@ -681,6 +716,7 @@ module.exports = {
       url:        p.source?.canonicalUrl || null,
       price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
+      variant_title: p.variants?.[0]?.title || null,
       fournisseur: 'VintageBulk',
       stockStatus: p.variants?.[0]?.price?.stockStatus ||
                    p.variants?.[0]?.stockStatus ||
@@ -697,6 +733,7 @@ module.exports = {
       url:        p.source?.canonicalUrl || null,
       price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
+      variant_title: p.variants?.[0]?.title || null,
       fournisseur: 'GradedWholesale',
       stockStatus: p.variants?.[0]?.price?.stockStatus ||
                    p.variants?.[0]?.stockStatus ||
@@ -727,6 +764,7 @@ module.exports = {
       url:        p.source?.canonicalUrl || null,
       price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
+      variant_title: p.variants?.[0]?.title || null,
       fournisseur: 'VintageDepot',
       stockStatus: p.variants?.[0]?.price?.stockStatus ||
                    p.variants?.[0]?.stockStatus ||
@@ -743,6 +781,7 @@ module.exports = {
       url:        p.source?.canonicalUrl || null,
       price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
+      variant_title: p.variants?.[0]?.title || null,
       fournisseur: 'VintageWholesaleUK',
       stockStatus: p.variants?.[0]?.price?.stockStatus ||
                    p.variants?.[0]?.stockStatus ||
@@ -759,6 +798,7 @@ module.exports = {
       url:        p.source?.canonicalUrl || null,
       price:      p.variants?.[0]?.price?.current != null ? Math.round(p.variants[0].price.current / 100 * 1.2 * 100) / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
+      variant_title: p.variants?.[0]?.title || null,
       fournisseur: 'DublinWholesaleVintage',
       stockStatus: p.variants?.[0]?.price?.stockStatus ||
                    p.variants?.[0]?.stockStatus ||
@@ -775,6 +815,7 @@ module.exports = {
       url:        p.source?.canonicalUrl || null,
       price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
+      variant_title: p.variants?.[0]?.title || null,
       fournisseur: 'VentorBox',
       stockStatus: p.variants?.[0]?.price?.stockStatus ||
                    p.variants?.[0]?.stockStatus ||
@@ -791,6 +832,7 @@ module.exports = {
       url:        p.source?.canonicalUrl || null,
       price:      p.variants?.[0]?.price?.current != null ? Math.round(p.variants[0].price.current / 100 * 1.023 * 100) / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
+      variant_title: p.variants?.[0]?.title || null,
       fournisseur: 'ToBeWornAgain',
       stockStatus: p.variants?.[0]?.price?.stockStatus ||
                    p.variants?.[0]?.stockStatus ||
@@ -807,6 +849,7 @@ module.exports = {
       url:        p.source?.canonicalUrl || null,
       price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
+      variant_title: p.variants?.[0]?.title || null,
       fournisseur: 'PickVintageWholesale',
       stockStatus: p.variants?.[0]?.price?.stockStatus ||
                    p.variants?.[0]?.stockStatus ||
@@ -823,6 +866,7 @@ module.exports = {
       url:        p.source?.canonicalUrl || null,
       price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
+      variant_title: p.variants?.[0]?.title || null,
       fournisseur: 'TorgomVintage',
       stockStatus: p.variants?.[0]?.price?.stockStatus ||
                    p.variants?.[0]?.stockStatus ||
@@ -839,6 +883,7 @@ module.exports = {
       url:        p.source?.canonicalUrl || null,
       price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
+      variant_title: p.variants?.[0]?.title || null,
       fournisseur: 'ThriftBundlez',
       stockStatus: p.variants?.[0]?.price?.stockStatus ||
                    p.variants?.[0]?.stockStatus ||
@@ -855,6 +900,7 @@ module.exports = {
       url:        p.source?.canonicalUrl || null,
       price:      p.variants?.[0]?.price?.current != null ? Math.round(p.variants[0].price.current / 100 * 1.2 * 100) / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
+      variant_title: p.variants?.[0]?.title || null,
       fournisseur: 'GGVintageWholesale',
       stockStatus: p.variants?.[0]?.price?.stockStatus ||
                    p.variants?.[0]?.stockStatus ||
@@ -871,6 +917,7 @@ module.exports = {
   //     url:        p.source?.canonicalUrl || null,
   //     price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
   //     image_url:  p.medias?.[0]?.url || null,
+      variant_title: p.variants?.[0]?.title || null,
   //     category:   p.categories?.[0] || null,
   //     tags:       normalizeTags(p.tags),
   //   }),
@@ -885,6 +932,7 @@ module.exports = {
       title:      p.title || null,
       price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
+      variant_title: p.variants?.[0]?.title || null,
       stockStatus: p.variants?.[0]?.stockStatus || null,
       fournisseur: 'IronBale',
     }),
@@ -899,6 +947,7 @@ module.exports = {
       title:      p.title || null,
       price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
+      variant_title: p.variants?.[0]?.title || null,
       stockStatus: p.variants?.[0]?.stockStatus || null,
       fournisseur: 'TheNewEraVintage',
     }),
@@ -913,6 +962,7 @@ module.exports = {
       title:      p.title || null,
       price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
+      variant_title: p.variants?.[0]?.title || null,
       stockStatus: p.variants?.[0]?.stockStatus || null,
       fournisseur: 'EuropeWholesales',
     }),
@@ -927,6 +977,7 @@ module.exports = {
       title:      p.title || null,
       price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
+      variant_title: p.variants?.[0]?.title || null,
       stockStatus: p.variants?.[0]?.stockStatus || null,
       fournisseur: 'RVVintageWholesaleBelgium',
     }),
@@ -941,6 +992,7 @@ module.exports = {
       title:      p.title || null,
       price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
+      variant_title: p.variants?.[0]?.title || null,
       stockStatus: p.variants?.[0]?.stockStatus || null,
       fournisseur: 'KeskinVintage',
     }),
@@ -955,6 +1007,7 @@ module.exports = {
       title:      p.title || null,
       price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
+      variant_title: p.variants?.[0]?.title || null,
       stockStatus: p.variants?.[0]?.stockStatus || null,
       fournisseur: 'VintageSupplyCo',
     }),
@@ -969,6 +1022,7 @@ module.exports = {
       title:      p.title || null,
       price:      p.variants?.[0]?.price?.current != null ? Math.round(p.variants[0].price.current / 100 / 1.10 * 100) / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
+      variant_title: p.variants?.[0]?.title || null,
       stockStatus: p.variants?.[0]?.stockStatus || null,
       fournisseur: 'VintageSupplier',
     }),
@@ -983,6 +1037,7 @@ module.exports = {
       title:      p.title || null,
       price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
+      variant_title: p.variants?.[0]?.title || null,
       stockStatus: p.variants?.[0]?.stockStatus || null,
       fournisseur: 'XVintageWholesales',
     }),
@@ -997,6 +1052,7 @@ module.exports = {
       title:      p.title || null,
       price:      p.variants?.[0]?.price?.current != null ? p.variants[0].price.current / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
+      variant_title: p.variants?.[0]?.title || null,
       stockStatus: p.variants?.[0]?.stockStatus || null,
       fournisseur: 'BigSkyVintageWholesale',
     }),
@@ -1041,6 +1097,7 @@ module.exports = {
       url:         p.source?.canonicalUrl || null,
       price:       p.variants?.[0]?.price?.current / 100 || null,
       image_url:   p.medias?.[0]?.url || null,
+      variant_title: p.variants?.[0]?.title || null,
       category:    p.categories?.[0] || null,
       tags:        normalizeTags(p.tags),
       stockStatus: p.variants?.[0]?.price?.stockStatus || 'InStock',
@@ -1086,6 +1143,7 @@ module.exports = {
       url:         p.source?.canonicalUrl || null,
       price:       p.variants?.[0]?.price?.current / 100 || null,
       image_url:   p.medias?.[0]?.url || null,
+      variant_title: p.variants?.[0]?.title || null,
       category:    p.categories?.[0] || null,
       tags:        normalizeTags(p.tags),
       stockStatus: p.variants?.[0]?.price?.stockStatus || 'InStock',
