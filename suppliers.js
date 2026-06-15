@@ -528,7 +528,7 @@ module.exports = {
       url:        p.source?.canonicalUrl || null,
       price:      p.variants?.[0]?.price?.current != null ? Math.round(p.variants[0].price.current / 100 * 0.827 * 100) / 100 : null,
       image_url:  p.medias?.[0]?.url || null,
-      variant_title: p.variants?.[0]?.title || null,
+      variant_title: (() => { const m = (p.source?.canonicalUrl || '').match(/(\d+)kg/i); return m ? m[1] + 'kg' : null; })(),
       category:   p.categories?.[0] || null,
       tags:       normalizeTags(p.tags),
       stockStatus: p.variants?.[0]?.price?.stockStatus ||
