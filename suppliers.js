@@ -752,7 +752,7 @@ module.exports = {
       url:        p.url || null,
       price:      p.price || null,
       image_url:  p.featuredImage || null,
-      variant_title: p.shortDescription || null,
+      variant_title: p.variations?.[0]?.attributes?.[0]?.option || p.attributes?.[0]?.options?.[0] || null,
       fournisseur: 'OneVintageWholesale',
       stockStatus: p.available ? 'InStock' : 'OutOfStock',
     }),
